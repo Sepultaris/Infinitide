@@ -1,0 +1,82 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+
+    <Platforms>x64</Platforms>
+
+    <Authors>ACEmulator Contributors</Authors>
+
+    <Company>ACEmulator</Company>
+
+    <Description>Asheron's Call server emulator</Description>
+
+    <Copyright>© 2017-2024 ACEmulator Team and Contributors</Copyright>
+
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+
+    <RepositoryUrl>https://github.com/ACEmulator/ACE</RepositoryUrl>
+
+    <PackageProjectUrl>https://emulator.ac</PackageProjectUrl>
+
+    <RepositoryType>git</RepositoryType>
+
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.CodeCoverage" Version="17.9.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="xunit" Version="2.7.1" />
+    <PackageReference Include="Xunit.DependencyInjection" Version="9.1.0" />
+    <PackageReference Include="xunit.runner.console" Version="2.7.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.3.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ACE.Adapter\ACE.Adapter.csproj" />
+    <ProjectReference Include="..\ACE.Common\ACE.Common.csproj" />
+    <ProjectReference Include="..\ACE.Database\ACE.Database.csproj" />
+    <ProjectReference Include="..\ACE.DatLoader\ACE.DatLoader.csproj" />
+    <ProjectReference Include="..\ACE.Entity\ACE.Entity.csproj" />
+    <ProjectReference Include="..\ACE.Server\ACE.Server.csproj" />
+  </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\..\LICENSE">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Config.js">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Config.realms.js">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="xunit.runner.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Helpers\realm-fixtures\coverage\ruleset\" />
+      <Folder Include="Helpers\realm-fixtures\coverage\realm\" />
+    </ItemGroup>
+
+</Project>

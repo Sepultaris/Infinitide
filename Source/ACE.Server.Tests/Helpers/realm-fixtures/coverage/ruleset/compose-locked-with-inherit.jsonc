@@ -1,0 +1,36 @@
+{
+  "name": "Compose Locked With Inherit",
+  "type": "Ruleset",
+  "parent": "Compose Root",
+  "properties": {
+    "Description": "All Properties Locked",
+    "CreatureStrengthAdded": {
+      "low": 10,
+      "high": 20,
+      "locked": true
+    },
+    "CreatureEnduranceAdded": {
+      "value": 10,
+      "locked": true
+    },
+    "CreatureCoordinationAdded": {
+      "compose": "add",
+      "value": 10,
+      "locked": true
+    },
+    "CreatureQuicknessAdded": {
+      "compose": "multiply",
+      "value": 10,
+      "locked": true
+    },
+    "CreatureFocusAdded": {
+      "value": 10,
+      "probability": 0,
+      "locked": true
+    },
+    "CreatureSelfAdded": {
+      "value": 10,
+      "locked": true
+    }
+  }
+}
