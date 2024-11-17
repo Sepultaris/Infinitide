@@ -93,7 +93,7 @@ namespace ACE.Server.Realms
 
         public long CalculateScaledXp(long m_amount, int instanceLevel)
         {
-            return (long)(m_amount * 6.2) + (long)(m_amount * Math.Pow(1.001, instanceLevel - 275));
+            return (long)(m_amount * 6.3) + (long)(m_amount * Math.Pow(1.001, instanceLevel - 275));
         }
 
         public static uint InstanceIDFromVars(ushort realmId, ushort shortInstanceId, bool isTemporaryRuleset)

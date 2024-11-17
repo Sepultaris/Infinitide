@@ -25,6 +25,7 @@ using ACE.Entity;
 using ACE.Server.Entity;
 using log4net.Core;
 using ACE.Server.Network.Structure;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ACE.Server.Factories
 {
@@ -173,126 +174,129 @@ namespace ACE.Server.Factories
                     if (obj.W_WeaponType == WeaponType.Unarmed)
                     {
                         var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.00035;
+                        double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
-                        obj.WieldRequirements = WieldRequirement.Level;
-                        obj.WieldDifficulty = instanceLevel;
                     }
                     if (obj.W_WeaponType == WeaponType.Sword)
                     {
                         var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.00035;
+                        double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
-                        obj.WieldRequirements = WieldRequirement.Level;
-                        obj.WieldDifficulty = instanceLevel;
                     }
                     if (obj.W_WeaponType == WeaponType.Axe)
                     {
                         var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.00035;
+                        double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
-                        obj.WieldRequirements = WieldRequirement.Level;
-                        obj.WieldDifficulty = instanceLevel;
                     }
                     if (obj.W_WeaponType == WeaponType.Mace)
                     {
                         var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.00035;
+                        double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
-                        obj.WieldRequirements = WieldRequirement.Level;
-                        obj.WieldDifficulty = instanceLevel;
                     }
                     if (obj.W_WeaponType == WeaponType.Spear)
                     {
                         var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.00035;
+                        double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
-                        obj.WieldRequirements = WieldRequirement.Level;
-                        obj.WieldDifficulty = instanceLevel;
                     }
                     if (obj.W_WeaponType == WeaponType.Dagger)
                     {
                         var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.00035;
+                        double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
-                        obj.WieldRequirements = WieldRequirement.Level;
-                        obj.WieldDifficulty = instanceLevel;
                     }
                     if (obj.W_WeaponType == WeaponType.Staff)
                     {
                         var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.00035;
+                        double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
-                        obj.WieldRequirements = WieldRequirement.Level;
-                        obj.WieldDifficulty = instanceLevel;
                     }
                     if (obj.W_WeaponType == WeaponType.Bow)
                     {
                         var damage = obj.DamageMod + (instanceLevel * 0.0001);
-                        double growthRate = 1.00035;
+                        double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.DamageMod = curve;
-                        obj.WieldRequirements = WieldRequirement.Level;
-                        obj.WieldDifficulty = instanceLevel;
                     }
                     if (obj.W_WeaponType == WeaponType.Crossbow)
                     {
                         var damage = obj.DamageMod + (instanceLevel * 0.0001);
-                        double growthRate = 1.00035;
+                        double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.DamageMod = curve;
-                        obj.WieldRequirements = WieldRequirement.Level;
-                        obj.WieldDifficulty = instanceLevel;
                     }
                     if (obj.W_WeaponType == WeaponType.Thrown)
                     {
                         var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.00035;
+                        double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
-                        obj.WieldRequirements = WieldRequirement.Level;
-                        obj.WieldDifficulty = instanceLevel;
                     }
                     if (obj.W_WeaponType == WeaponType.TwoHanded)
                     {
                         var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.00035;
+                        double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
-                        obj.WieldRequirements = WieldRequirement.Level;
-                        obj.WieldDifficulty = instanceLevel;
                     }
                     if (obj.IsCaster)
                     {
                         if (obj.ElementalDamageMod != null)
                         {
                             var damage = obj.ElementalDamageMod + (instanceLevel * 0.00015);
-                            double growthRate = 1.00035;
+                            double growthRate = 1.0035;
                             var curve = damage * Math.Pow(growthRate, (double)damage);
                             obj.ElementalDamageMod = curve;
-                            obj.WieldRequirements = WieldRequirement.Level;
-                            obj.WieldDifficulty = instanceLevel;
                         }
                     }
-                    if (obj.ItemType == ItemType.Clothing)
+
+                    double gearGrowthRate = 1.35;
+                    var gearRating = (int)Math.Round(1 * Math.Pow(gearGrowthRate, instanceLevel * 0.015) + ThreadSafeRandom.Next(1, 3));
+
+                    if (obj.ItemType == ItemType.Clothing || obj.ItemType == ItemType.Armor)
                     {
                         if (obj.ArmorLevel != null)
                         {
                             if (obj.ArmorLevel > 0)
                             {
+                                if (obj.Name.Contains("Covenant"))
+                                {
+                                    obj.ArmorLevel = obj.ArmorLevel - 80;
+                                }
                                 var armorLevel = obj.ArmorLevel + instanceLevel / 100;
-                                double growthRate = 1.00035;
+                                double growthRate = 1.0008;
                                 var curve = armorLevel * Math.Pow(growthRate, (double)armorLevel);
                                 obj.ArmorLevel = (int?)curve;
-                                obj.WieldRequirements = WieldRequirement.Level;
-                                obj.WieldDifficulty = instanceLevel;
+                                if (instanceLevel >= 220) //Ratings
+                                {
+                                    var rng = ThreadSafeRandom.Next(0, 1);
+
+                                    if (rng == 0)
+                                        obj.GearCritDamage = gearRating;
+                                    else
+                                        obj.GearCritDamageResist = gearRating;
+                                }
+                            }
+                            else
+                            {
+                                if (instanceLevel >= 220) //Ratings
+                                {
+                                    var rng = ThreadSafeRandom.Next(0, 1);
+
+                                    if (rng == 0)
+                                        obj.GearDamage = gearRating;
+                                    else
+                                        obj.GearDamageResist = gearRating;
+                                }
                             }
                         }
                     }
@@ -303,12 +307,34 @@ namespace ACE.Server.Factories
                             if (obj.ArmorLevel > 0)
                             {
                                 var armorLevel = obj.ArmorLevel + instanceLevel / 100;
-                                double growthRate = 1.00035;
+                                double growthRate = 1.0008;
                                 var curve = armorLevel * Math.Pow(growthRate, (double)armorLevel);
                                 obj.ArmorLevel = (int?)curve;
-                                obj.WieldRequirements = WieldRequirement.Level;
-                                obj.WieldDifficulty = instanceLevel;
                             }
+                        }
+                    }
+                    if (obj.ItemType == ItemType.Jewelry)
+                    {
+                        if (instanceLevel >= 220) //Ratings
+                        {
+                            var rng = ThreadSafeRandom.Next(0, 1);
+
+                            if (rng == 0)
+                                obj.GearHealingBoost = gearRating;
+                            else
+                                obj.GearMaxHealth = gearRating;
+                        }
+                    }
+                    if (obj.ItemType == ItemType.Clothing && obj.GetProperty(PropertyInt.ValidLocations) == 0x8000000) //Cloaks
+                    {
+                        if (instanceLevel >= 220) //Ratings
+                        {
+                            var rng = ThreadSafeRandom.Next(0, 1);
+
+                            if (rng == 0)
+                                obj.GearDamage = gearRating;
+                            else
+                                obj.GearDamageResist = gearRating;
                         }
                     }
                 }

@@ -53,15 +53,15 @@ namespace ACE.Server.WorldObjects
                 var baseQuickness = Quickness.Base;
                 var baseSelf = Self.Base;
                 var baseFocus = Focus.Base;
-                uint newHealthValue = (uint)(baseMaxHealth + (baseMaxHealth / 100) + instanceLevel) / 10;
-                uint newStaminaValue = (uint)(baseMaxStamina + (baseMaxStamina / 100) + instanceLevel) /10;
-                uint newManaValue = (uint)(baseMaxMana + (baseMaxMana / 100) + instanceLevel) / 10;
-                uint newStrength = (uint)((baseStrength * Math.Pow(1.001, instanceLevel / 10) / 10) * 0.3f);
-                uint newEndurance = (uint)((baseEndurance * Math.Pow(1.001, instanceLevel / 10) / 10) * 0.3f);
-                uint newCoordination = (uint)((baseCoordination * Math.Pow(1.001, instanceLevel / 10) / 10) * 0.3f);
-                uint newQuickness = (uint)((baseQuickness * Math.Pow(1.001, instanceLevel / 10) / 10) * 0.3f);
-                uint newSelf = (uint)((baseSelf * Math.Pow(1.001, instanceLevel / 10) / 10) * 0.3f);
-                uint newFocus = (uint)((baseFocus * Math.Pow(1.001, instanceLevel / 10) / 10) * 0.3f);
+                uint newHealthValue = (uint)((baseMaxHealth * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                uint newStaminaValue = (uint)((baseMaxStamina * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                uint newManaValue = (uint)((baseMaxMana * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                uint newStrength = (uint)((baseStrength * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                uint newEndurance = (uint)((baseEndurance * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                uint newCoordination = (uint)((baseCoordination * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                uint newQuickness = (uint)((baseQuickness * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                uint newSelf = (uint)((baseSelf * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                uint newFocus = (uint)((baseFocus * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
 
                 if (Vitals.ContainsKey(PropertyAttribute2nd.MaxHealth))
                     Vitals[PropertyAttribute2nd.MaxHealth].Ranks = newHealthValue;
