@@ -1444,5 +1444,23 @@ namespace ACE.Server.WorldObjects
             get => GetProperty(PropertyInt.RaisedMana) ?? 1;
             set { if (value == 0) RemoveProperty(PropertyInt.RaisedMana); else SetProperty(PropertyInt.RaisedMana, value); }
         }
+
+        public bool IsInvited
+        {
+            get => GetProperty(PropertyBool.IsInvited) ?? false;
+            set { if (!value) RemoveProperty(PropertyBool.IsInvited); else SetProperty(PropertyBool.IsInvited, value); }
+        }
+
+        public bool IsInviting
+        {
+            get => GetProperty(PropertyBool.IsInviting) ?? false;
+            set { if (!value) RemoveProperty(PropertyBool.IsInviting); else SetProperty(PropertyBool.IsInviting, value); }
+        }
+
+        public string InviterName
+        {
+            get => GetProperty(PropertyString.InviterName);
+            set { if (value == null) RemoveProperty(PropertyString.InviterName); else SetProperty(PropertyString.InviterName, value); }
+        }
     }
 }

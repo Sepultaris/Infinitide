@@ -99,6 +99,7 @@ namespace ACE.Entity.Enum.Properties
         GodState                        = 9006,
         [ServerOnly]
         TinkerLog                       = 9007,
+        InviterName                     = 9008,
 
         [ServerOnly]
         SummonTargetRuleset             = 42000,

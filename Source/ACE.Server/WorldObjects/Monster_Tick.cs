@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using ACE.Database;
 using ACE.Entity.Enum;
 using ACE.Entity.Enum.Properties;
 using ACE.Entity.Models;
-using ACE.Server.Network.GameMessages.Messages;
-using ACE.Server.Realms;
-using log4net.Core;
+using ACE.Server.Managers;
+using ACE.Server.Realms.Peripherals;
 
 namespace ACE.Server.WorldObjects
 {
@@ -36,66 +33,71 @@ namespace ACE.Server.WorldObjects
                 pet.Tick(currentUnixTime);
                 return;
             }
+            var position = Location.AsLocalPosition();
+            bool inSetLandblock = RealmManager.Peripherals.DungeonSets.IncludedInSet(position, "default");
 
-            if (Level != Location.CalculateInstanceLevel(CurrentLandblock.Id))
-                CreatureStatsUpdated = false;
-
-            if (this is not CombatPet && CurrentLandblock.HasDungeon && !CreatureStatsUpdated)
+            if (inSetLandblock)
             {
-                var instanceLevel = Location.CalculateInstanceLevel(CurrentLandblock.Id);
-                var weenie = DatabaseManager.World.GetCachedWeenie(WeenieClassId);
-                var baseMaxHealth = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxHealth).Value;
-                var baseMaxStamina = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxStamina).Value;
-                var baseMaxMana = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxMana).Value;
-                var baseStrength = Strength.Base;
-                var baseEndurance = Endurance.Base;
-                var baseCoordination = Coordination.Base;
-                var baseQuickness = Quickness.Base;
-                var baseSelf = Self.Base;
-                var baseFocus = Focus.Base;
-                uint newHealthValue = (uint)((baseMaxHealth * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
-                uint newStaminaValue = (uint)((baseMaxStamina * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
-                uint newManaValue = (uint)((baseMaxMana * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
-                uint newStrength = (uint)((baseStrength * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
-                uint newEndurance = (uint)((baseEndurance * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
-                uint newCoordination = (uint)((baseCoordination * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
-                uint newQuickness = (uint)((baseQuickness * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
-                uint newSelf = (uint)((baseSelf * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
-                uint newFocus = (uint)((baseFocus * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                if (Level != Location.CalculateInstanceLevel(CurrentLandblock.Id))
+                    CreatureStatsUpdated = false;
 
-                if (Vitals.ContainsKey(PropertyAttribute2nd.MaxHealth))
-                    Vitals[PropertyAttribute2nd.MaxHealth].Ranks = newHealthValue;
+                if (this is not CombatPet && !CreatureStatsUpdated)
+                {
+                    var instanceLevel = Location.CalculateInstanceLevel(CurrentLandblock.Id);
+                    var weenie = DatabaseManager.World.GetCachedWeenie(WeenieClassId);
+                    var baseMaxHealth = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxHealth).Value;
+                    var baseMaxStamina = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxStamina).Value;
+                    var baseMaxMana = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxMana).Value;
+                    var baseStrength = Strength.Base;
+                    var baseEndurance = Endurance.Base;
+                    var baseCoordination = Coordination.Base;
+                    var baseQuickness = Quickness.Base;
+                    var baseSelf = Self.Base;
+                    var baseFocus = Focus.Base;
+                    uint newHealthValue = (uint)((baseMaxHealth * Math.Pow(1.06, instanceLevel / 10) / 10) * 0.3f);
+                    uint newStaminaValue = (uint)((baseMaxStamina * Math.Pow(1.06, instanceLevel / 10) / 10) * 0.3f);
+                    uint newManaValue = (uint)((baseMaxMana * Math.Pow(1.06, instanceLevel / 10) / 10) * 0.3f);
+                    uint newStrength = (uint)((baseStrength * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                    uint newEndurance = (uint)((baseEndurance * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                    uint newCoordination = (uint)((baseCoordination * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                    uint newQuickness = (uint)((baseQuickness * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                    uint newSelf = (uint)((baseSelf * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
+                    uint newFocus = (uint)((baseFocus * Math.Pow(1.04, instanceLevel / 10) / 10) * 0.3f);
 
-                if (Vitals.ContainsKey(PropertyAttribute2nd.MaxStamina))
-                    Vitals[PropertyAttribute2nd.MaxStamina].Ranks = newStaminaValue;
+                    if (Vitals.ContainsKey(PropertyAttribute2nd.MaxHealth))
+                        Vitals[PropertyAttribute2nd.MaxHealth].Ranks = newHealthValue;
 
-                if (Vitals.ContainsKey(PropertyAttribute2nd.MaxMana))
-                    Vitals[PropertyAttribute2nd.MaxMana].Ranks = newManaValue;
+                    if (Vitals.ContainsKey(PropertyAttribute2nd.MaxStamina))
+                        Vitals[PropertyAttribute2nd.MaxStamina].Ranks = newStaminaValue;
 
-                if (Attributes.ContainsKey(PropertyAttribute.Strength))
-                    Attributes[PropertyAttribute.Strength].Ranks = newStrength;
+                    if (Vitals.ContainsKey(PropertyAttribute2nd.MaxMana))
+                        Vitals[PropertyAttribute2nd.MaxMana].Ranks = newManaValue;
 
-                if (Attributes.ContainsKey(PropertyAttribute.Endurance))
-                    Attributes[PropertyAttribute.Endurance].Ranks = newEndurance;
+                    if (Attributes.ContainsKey(PropertyAttribute.Strength))
+                        Attributes[PropertyAttribute.Strength].Ranks = newStrength;
 
-                if (Attributes.ContainsKey(PropertyAttribute.Coordination))
-                    Attributes[PropertyAttribute.Coordination].Ranks = newCoordination;
+                    if (Attributes.ContainsKey(PropertyAttribute.Endurance))
+                        Attributes[PropertyAttribute.Endurance].Ranks = newEndurance;
 
-                if (Attributes.ContainsKey(PropertyAttribute.Quickness))
-                    Attributes[PropertyAttribute.Quickness].Ranks = newQuickness;
+                    if (Attributes.ContainsKey(PropertyAttribute.Coordination))
+                        Attributes[PropertyAttribute.Coordination].Ranks = newCoordination;
 
-                if (Attributes.ContainsKey(PropertyAttribute.Focus))
-                    Attributes[PropertyAttribute.Focus].Ranks = newFocus;
+                    if (Attributes.ContainsKey(PropertyAttribute.Quickness))
+                        Attributes[PropertyAttribute.Quickness].Ranks = newQuickness;
 
-                if (Attributes.ContainsKey(PropertyAttribute.Self))
-                    Attributes[PropertyAttribute.Self].Ranks = newSelf;
+                    if (Attributes.ContainsKey(PropertyAttribute.Focus))
+                        Attributes[PropertyAttribute.Focus].Ranks = newFocus;
 
-                Health.Current = Health.MaxValue;
-                Stamina.Current = Stamina.MaxValue;
-                Mana.Current = Mana.MaxValue;
+                    if (Attributes.ContainsKey(PropertyAttribute.Self))
+                        Attributes[PropertyAttribute.Self].Ranks = newSelf;
 
-                Level = instanceLevel;
-                CreatureStatsUpdated = true;
+                    Health.Current = Health.MaxValue;
+                    Stamina.Current = Stamina.MaxValue;
+                    Mana.Current = Mana.MaxValue;
+
+                    Level = instanceLevel;
+                    CreatureStatsUpdated = true;
+                }
             }
 
             NextMonsterTickTime = currentUnixTime + monsterTickInterval;

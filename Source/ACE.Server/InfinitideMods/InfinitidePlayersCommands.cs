@@ -1,6 +1,9 @@
 using System;
+using System.Linq;
+using ACE.Common;
 using ACE.Entity.Enum;
 using ACE.Entity.Enum.Properties;
+using ACE.Server.Managers;
 using ACE.Server.Network;
 using ACE.Server.Network.GameMessages.Messages;
 using ACE.Server.WorldObjects;
@@ -10,6 +13,33 @@ namespace ACE.Server.Command.Handlers
 {
     public static class InfinitidePlayersCommands
     {
+        [CommandHandler("rfel", AccessLevel.Player, CommandHandlerFlag.RequiresWorld, 0, ".")]
+        [CommandHandler("recall_fellowship", AccessLevel.Player, CommandHandlerFlag.RequiresWorld, 1, ".")]
+        public static void HandleRecallFellowship(ISession session, params string[] parameters)
+        {
+            if (session.Player.Fellowship != null)
+            {
+                foreach (var f in session.Player.GetFellowshipTargets().Where(x => x.Name != session.Player.Name))
+                {
+                    string Joiner = string.Join(" ", f.Name);
+                    HandleRecallFriend(session, Joiner);
+                    return;
+                }
+            }
+        }
+
+        [CommandHandler("rf", AccessLevel.Player, CommandHandlerFlag.RequiresWorld, 1, ".")]
+        [CommandHandler("recall_friend", AccessLevel.Player, CommandHandlerFlag.RequiresWorld, 1, ".")]
+        public static void HandleRF(ISession session, params string[] parameters)
+        {
+            if (parameters[0] != null && parameters[0] is string)
+            {
+                string Joiner = string.Join(" ", parameters);
+                HandleRecallFriend(session, Joiner);
+                return;
+            }
+        } 
+
         [CommandHandler("raise", AccessLevel.Player, CommandHandlerFlag.RequiresWorld, 1, "Allows you to raise attributes past maximum. Allows you to raise Luminance Augmentation for Damage Rating (Destruction), Damage Reduction (Invulnerability), Critical Damage (Glory) and Critical Damage Reduction (Temperance) and Max Health, Stamina, and Mana (Vitality).")]
         public static void HandleRaise(ISession session, params string[] parameters)
         {
@@ -417,6 +447,36 @@ namespace ACE.Server.Command.Handlers
             // Calculate the cost to raise an attribute at this level
             long xpCost = (long)(baseCost * Math.Pow(growthRate, level - 1));
             return xpCost;
+        }
+
+        public static void HandleRecallFriend(ISession session, string parameters)
+        {
+            string playerName = parameters;
+
+            if (playerName == null)
+                return;
+
+            InvitePlayer(session.Player, playerName);
+            return;
+        }
+
+        public static void InvitePlayer(Player issuer, string playerName)
+        {
+            var player = PlayerManager.GetOnlinePlayer(playerName);
+            string issuerName = issuer.Name;
+
+            if (player == null)
+            {
+                issuer.Session.Network.EnqueueSend(new GameMessageSystemChat($"Player {playerName} was not found.", ChatMessageType.Broadcast));
+                return;
+            }
+
+            player.SetProperty(PropertyBool.IsInvited, true);
+            player.SetProperty(PropertyString.InviterName, issuerName);
+            player.SaveBiotaToDatabase();
+            issuer.IsInviting = true;
+
+            return;
         }
     }
 }

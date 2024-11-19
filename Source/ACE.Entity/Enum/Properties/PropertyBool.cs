@@ -194,6 +194,8 @@ namespace ACE.Entity.Enum.Properties
         [ServerOnly]
         FreeMasteryResetRenewed          = 9010,
         CreatureStatsUpdated             = 9011,
+        IsInvited                        = 9012,
+        IsInviting                       = 9013,
 
         /// <summary>
         /// If set to true on a vendor, the vendor will be auto-populated with realm selections.
