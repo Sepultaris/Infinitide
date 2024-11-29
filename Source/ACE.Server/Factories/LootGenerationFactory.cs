@@ -171,12 +171,15 @@ namespace ACE.Server.Factories
             {
                 foreach (var obj in loot)
                 {
+                    //Weapons
+
                     if (obj.W_WeaponType == WeaponType.Unarmed)
                     {
                         var damage = obj.Damage + instanceLevel / 100;
                         double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
+                        obj.WeaponBaseDamage = (int?)curve;
                     }
                     if (obj.W_WeaponType == WeaponType.Sword)
                     {
@@ -184,6 +187,7 @@ namespace ACE.Server.Factories
                         double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
+                        obj.WeaponBaseDamage = (int?)curve;
                     }
                     if (obj.W_WeaponType == WeaponType.Axe)
                     {
@@ -191,6 +195,7 @@ namespace ACE.Server.Factories
                         double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
+                        obj.WeaponBaseDamage = (int?)curve;
                     }
                     if (obj.W_WeaponType == WeaponType.Mace)
                     {
@@ -198,6 +203,7 @@ namespace ACE.Server.Factories
                         double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
+                        obj.WeaponBaseDamage = (int?)curve;
                     }
                     if (obj.W_WeaponType == WeaponType.Spear)
                     {
@@ -205,6 +211,7 @@ namespace ACE.Server.Factories
                         double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
+                        obj.WeaponBaseDamage = (int?)curve;
                     }
                     if (obj.W_WeaponType == WeaponType.Dagger)
                     {
@@ -212,6 +219,7 @@ namespace ACE.Server.Factories
                         double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
+                        obj.WeaponBaseDamage = (int?)curve;
                     }
                     if (obj.W_WeaponType == WeaponType.Staff)
                     {
@@ -219,6 +227,7 @@ namespace ACE.Server.Factories
                         double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
+                        obj.WeaponBaseDamage = (int?)curve;
                     }
                     if (obj.W_WeaponType == WeaponType.Bow)
                     {
@@ -226,6 +235,7 @@ namespace ACE.Server.Factories
                         double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.DamageMod = curve;
+                        obj.WeaponBaseDamageMod = curve;
                     }
                     if (obj.W_WeaponType == WeaponType.Crossbow)
                     {
@@ -233,6 +243,7 @@ namespace ACE.Server.Factories
                         double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.DamageMod = curve;
+                        obj.WeaponBaseDamageMod = curve;
                     }
                     if (obj.W_WeaponType == WeaponType.Thrown)
                     {
@@ -240,6 +251,7 @@ namespace ACE.Server.Factories
                         double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
+                        obj.WeaponBaseDamage = (int?)curve;
                     }
                     if (obj.W_WeaponType == WeaponType.TwoHanded)
                     {
@@ -247,6 +259,7 @@ namespace ACE.Server.Factories
                         double growthRate = 1.0035;
                         var curve = damage * Math.Pow(growthRate, (double)damage);
                         obj.Damage = (int?)curve;
+                        obj.WeaponBaseDamage = (int?)curve;
                     }
                     if (obj.IsCaster)
                     {
@@ -256,10 +269,81 @@ namespace ACE.Server.Factories
                             double growthRate = 1.0035;
                             var curve = damage * Math.Pow(growthRate, (double)damage);
                             obj.ElementalDamageMod = curve;
+                            obj.WeaponBaseDamageMod = curve;
                         }
                     }
 
-                    double gearGrowthRate = 1.35;
+                    // Roll Cleave and extra properties.
+
+                    if (obj.ItemType == ItemType.MeleeWeapon)
+                    {
+                        if (obj.IsCleaving)
+                        {
+                            int cleavingRoll = ThreadSafeRandom.Next(2, 5);
+
+                            obj.SetProperty(PropertyInt.Cleaving, cleavingRoll);
+                        }
+                        else
+                        {
+                            var cleavingChance = ThreadSafeRandom.Next(0.00f, 1.00f);
+
+                            if (cleavingChance <= 0.2f)
+                            {
+                                int cleavingRoll = ThreadSafeRandom.Next(2, 5);
+
+                                obj.SetProperty(PropertyInt.Cleaving, cleavingRoll);
+                            }
+                        }
+                        var maxlevel = 100;
+                        var basexp = 1000000000;
+
+                        obj.ItemMaxLevel = maxlevel;
+                        obj.SetProperty(PropertyInt.ItemXpStyle, 1);
+                        obj.ItemBaseXp = basexp;
+                        obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
+                    }
+
+                    if (obj.ItemType == ItemType.MissileWeapon)
+                    {
+                        var cleavingChance = ThreadSafeRandom.Next(0.00f, 1.00f);
+
+                        if (cleavingChance <= 0.2f)
+                        {
+                            int cleavingRoll = ThreadSafeRandom.Next(2, 3);
+
+                            obj.SetProperty(PropertyInt.Cleaving, cleavingRoll);
+                        }
+                        var maxlevel = 100;
+                        var basexp = 1000000000;
+
+                        obj.ItemMaxLevel = maxlevel;
+                        obj.SetProperty(PropertyInt.ItemXpStyle, 1);
+                        obj.ItemBaseXp = basexp;
+                        obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
+                    }
+
+                    if (obj.ItemType == ItemType.Caster)
+                    {
+                        var cleavingChance = ThreadSafeRandom.Next(0.00f, 1.00f);
+
+                        if (cleavingChance <= 0.2f)
+                        {
+                            int cleavingRoll = 2;
+
+                            obj.SetProperty(PropertyInt.Cleaving, cleavingRoll);
+                        }
+                        var maxlevel = 100;
+                        var basexp = 1000000000;
+
+                        obj.ItemMaxLevel = maxlevel;
+                        obj.SetProperty(PropertyInt.ItemXpStyle, 1);
+                        obj.ItemBaseXp = basexp;
+                        obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
+                    }
+
+                        // Wearables
+
+                        double gearGrowthRate = 1.35;
                     var gearRating = (int)Math.Round(1 * Math.Pow(gearGrowthRate, instanceLevel * 0.015) + ThreadSafeRandom.Next(1, 3));
 
                     if (obj.ItemType == ItemType.Clothing || obj.ItemType == ItemType.Armor)
@@ -276,6 +360,7 @@ namespace ACE.Server.Factories
                                 double growthRate = 1.0008;
                                 var curve = armorLevel * Math.Pow(growthRate, (double)armorLevel);
                                 obj.ArmorLevel = (int?)curve;
+                                obj.BaseArmorLevel = obj.ArmorLevel;
                                 if (instanceLevel >= 220) //Ratings
                                 {
                                     var rng = ThreadSafeRandom.Next(0, 1);
@@ -285,6 +370,13 @@ namespace ACE.Server.Factories
                                     else
                                         obj.GearCritDamageResist = gearRating;
                                 }
+                                var maxlevel = 100;
+                                var basexp = 1000000000;
+
+                                obj.ItemMaxLevel = maxlevel;
+                                obj.SetProperty(PropertyInt.ItemXpStyle, 1);
+                                obj.ItemBaseXp = basexp;
+                                obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
                             }
                             else
                             {
@@ -311,6 +403,13 @@ namespace ACE.Server.Factories
                                 var curve = armorLevel * Math.Pow(growthRate, (double)armorLevel);
                                 obj.ArmorLevel = (int?)curve;
                             }
+                            var maxlevel = 100;
+                            var basexp = 1000000000;
+
+                            obj.ItemMaxLevel = maxlevel;
+                            obj.SetProperty(PropertyInt.ItemXpStyle, 1);
+                            obj.ItemBaseXp = basexp;
+                            obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
                         }
                     }
                     if (obj.ItemType == ItemType.Jewelry)

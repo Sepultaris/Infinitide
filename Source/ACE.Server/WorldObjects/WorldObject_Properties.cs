@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-
-using ACE.Common;
+using System.Text.Json;
 using ACE.Database;
 using ACE.DatLoader;
 using ACE.DatLoader.FileTypes;
@@ -14,9 +13,7 @@ using ACE.Entity.Models;
 using ACE.Server.Entity;
 using ACE.Server.Managers;
 using ACE.Server.Network.Structure;
-using ACE.Server.Physics.Extensions;
 using ACE.Server.Realms;
-using static ACE.Server.Physics.Common.LandDefs;
 
 namespace ACE.Server.WorldObjects
 {
@@ -3250,5 +3247,62 @@ Report this to the AC Realms developer.");
         /// If not unlimited, client will only allow you to buy or add to buy list up this number of items for a single transaction.
         /// </summary>
         public int? VendorShopCreateListStackSize;
+
+        public bool IsGunblade
+        {
+            get => GetProperty(PropertyBool.IsGunblade) ?? false;
+            set { if (!value) RemoveProperty(PropertyBool.IsGunblade); else SetProperty(PropertyBool.IsGunblade, value); }
+        }
+
+        public Dictionary<CreatureType, int> GetMonsterKillHistory()
+        {
+            Dictionary<CreatureType, int> tempKillHistoryDictionary = new();
+
+            tempKillHistoryDictionary = JsonSerializer.Deserialize<Dictionary<CreatureType, int>>(GetProperty(PropertyString.MonsterKillHistory) ?? "{}");
+
+            return tempKillHistoryDictionary;
+        }
+
+        public void AddMonsterToKillHistory(CreatureType creatureType, int value)
+        {
+            Dictionary<CreatureType, int> tempKillHistoryDictionary = new();
+
+            tempKillHistoryDictionary = JsonSerializer.Deserialize<Dictionary<CreatureType, int>>(GetProperty(PropertyString.MonsterKillHistory) ?? "{}");
+            tempKillHistoryDictionary.Add(creatureType, value);
+            SetProperty(PropertyString.MonsterKillHistory, JsonSerializer.Serialize(tempKillHistoryDictionary));
+        }
+
+        public void RemoveMonsterFromKillHistory(CreatureType creatureType)
+        {
+            Dictionary<CreatureType, int> tempKillHistoryDictionary = new();
+
+            tempKillHistoryDictionary = JsonSerializer.Deserialize<Dictionary<CreatureType, int>>(GetProperty(PropertyString.MonsterKillHistory) ?? "{}");
+            tempKillHistoryDictionary.Remove(creatureType);
+            SetProperty(PropertyString.MonsterKillHistory, JsonSerializer.Serialize(tempKillHistoryDictionary));
+        }
+
+        public string MonsterKillHistory
+        {
+            get => GetProperty(PropertyString.MonsterKillHistory) ?? "{}";
+            set { if (value == null) RemoveProperty(PropertyString.MonsterKillHistory); else SetProperty(PropertyString.MonsterKillHistory, value); }
+        }
+
+        public int? WeaponBaseDamage
+        {
+            get => GetProperty(PropertyInt.WeaponBaseDamage);
+            set { if (!value.HasValue) RemoveProperty(PropertyInt.WeaponBaseDamage); else SetProperty(PropertyInt.WeaponBaseDamage, value.Value); }
+        }
+
+        public double? WeaponBaseDamageMod
+        {
+            get => GetProperty(PropertyFloat.WeaponBaseDamageMod);
+            set { if (!value.HasValue) RemoveProperty(PropertyFloat.WeaponBaseDamageMod); else SetProperty(PropertyFloat.WeaponBaseDamageMod, value.Value); }
+        }
+
+        public int? BaseArmorLevel
+        {
+            get => GetProperty(PropertyInt.BaseArmorLevel);
+            set { if (!value.HasValue) RemoveProperty(PropertyInt.BaseArmorLevel); else SetProperty(PropertyInt.BaseArmorLevel, value.Value); }
+        }
     }
 }

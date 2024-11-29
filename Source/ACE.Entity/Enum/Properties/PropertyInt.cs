@@ -652,6 +652,9 @@ namespace ACE.Entity.Enum.Properties
         [ServerOnly]
         RaisedMana = 9025,
 
+        WeaponBaseDamage = 9026,
+        BaseArmorLevel   = 9027,
+
         // AC Realms property IDs are reserved start with 42000-42999
         //
         [ServerOnly]

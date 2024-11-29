@@ -100,6 +100,7 @@ namespace ACE.Entity.Enum.Properties
         [ServerOnly]
         TinkerLog                       = 9007,
         InviterName                     = 9008,
+        MonsterKillHistory              = 9009,
 
         [ServerOnly]
         SummonTargetRuleset             = 42000,

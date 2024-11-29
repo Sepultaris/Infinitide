@@ -17,6 +17,8 @@ namespace ACE.Server.WorldObjects
 {
     partial class Player
     {
+        public static readonly float MagicCleaveCylRange = 4.0f;
+
         // TODO: get rid of this, only used for determining if TurnTo is required
         public enum TargetCategory
         {
@@ -1064,6 +1066,9 @@ namespace ACE.Server.WorldObjects
             var targetCreature = target as Creature;
             var targetPlayer = target as Player;
 
+            bool targetDeath;
+            var enchantmentStatus = new EnchantmentStatus(spell);
+
             LastSuccessCast_School = spell.School;
             LastSuccessCast_Time = Time.GetUnixTime();
 
@@ -1077,6 +1082,145 @@ namespace ACE.Server.WorldObjects
 
             switch (spell.School)
             {
+                case MagicSchool.WarMagic:
+                    if (caster.IsCleaving)
+                    {
+                        if (target != null)
+                        {
+                            WarMagic(target, spell, caster, isWeaponSpell);
+                            var cleave = GetMagicCleaveTarget(targetCreature, caster);
+                            var warChannelRoll = ThreadSafeRandom.Next((float)0.0, 1.0f);
+                            var warChannelChance = 0.10f;
+                            var warMagicSkill = GetCreatureSkill(Skill.WarMagic);
+                            var currentUnixTime = (uint)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+
+                            foreach (var cleaveHit in cleave)
+                            {
+                                WarMagic(cleaveHit, spell, caster, isWeaponSpell);
+                            }
+                            
+                            break;
+                        }
+                        else
+                            WarMagic(target, spell, caster, isWeaponSpell);
+                    }
+                    else
+                        WarMagic(target, spell, caster, isWeaponSpell);
+
+                    break;
+                case MagicSchool.VoidMagic:
+                    if (caster.IsCleaving)
+                    {
+                        if (target != null)
+                        {
+                            VoidMagic(target, spell, caster, isWeaponSpell);
+                            var cleave = GetMagicCleaveTarget(targetCreature, caster);
+
+                            foreach (var cleaveHit in cleave)
+                            {
+
+                                VoidMagic(cleaveHit, spell, caster, isWeaponSpell);
+                            }
+                            break;
+                        }
+                        else
+                            VoidMagic(target, spell, caster, isWeaponSpell);
+
+                    }
+                    else
+                        VoidMagic(target, spell, caster, isWeaponSpell);
+
+
+                    break;
+
+                case MagicSchool.CreatureEnchantment:
+
+                    if (targetPlayer == null)
+                        OnAttackMonster(targetCreature);
+
+                    if (TryResistSpell(target, spell, itemCaster))
+                        break;
+
+                    if (targetCreature != null && targetCreature.NonProjectileMagicImmune)
+                    {
+                        Session.Network.EnqueueSend(new GameMessageSystemChat($"You fail to affect {targetCreature.Name} with {spell.Name}", ChatMessageType.Magic));
+                        break;
+                    }
+
+                    EnqueueBroadcast(new GameMessageScript(target.Guid, spell.TargetEffect, spell.Formula.Scale));
+                    enchantmentStatus = CreatureMagic(target, spell);
+                    if (enchantmentStatus.Message != null)
+                        Session.Network.EnqueueSend(enchantmentStatus.Message);
+
+                    if (spell.IsHarmful)
+                    {
+                        if (targetCreature != null)
+                            Proficiency.OnSuccessUse(this, GetCreatureSkill(Skill.CreatureEnchantment), targetCreature.GetCreatureSkill(Skill.MagicDefense).Current);
+
+                        // handle target procs
+                        if (targetCreature != null && targetCreature != this)
+                            TryProcEquippedItems(this, targetCreature, false, caster);
+
+                        if (targetPlayer != null)
+                            UpdatePKTimers(this, targetPlayer);
+                    }
+                    else
+                        Proficiency.OnSuccessUse(this, GetCreatureSkill(Skill.CreatureEnchantment), spell.PowerMod);
+
+                    break;
+
+                case MagicSchool.LifeMagic:
+
+                    if (spell.MetaSpellType != SpellType.LifeProjectile)
+                    {
+                        if (targetPlayer == null)
+                            OnAttackMonster(targetCreature);
+
+                        if (TryResistSpell(target, spell, itemCaster))
+                            break;
+
+                        if (targetCreature != null && targetCreature.NonProjectileMagicImmune)
+                        {
+                            Session.Network.EnqueueSend(new GameMessageSystemChat($"You fail to affect {targetCreature.Name} with {spell.Name}", ChatMessageType.Magic));
+                            break;
+                        }
+                    }
+
+                    targetDeath = LifeMagic(spell, out uint damage, out enchantmentStatus, target, itemCaster, caster, isWeaponSpell);
+
+                    if (spell.MetaSpellType != SpellType.LifeProjectile)
+                    {
+                        if (target != null)
+                            EnqueueBroadcast(new GameMessageScript(target.Guid, spell.TargetEffect, spell.Formula.Scale));
+
+                        if (spell.IsHarmful)
+                        {
+                            if (targetCreature != null)
+                                Proficiency.OnSuccessUse(this, GetCreatureSkill(Skill.LifeMagic), targetCreature.GetCreatureSkill(Skill.MagicDefense).Current);
+
+                            // handle target procs
+                            if (targetCreature != null && targetCreature != this)
+                                TryProcEquippedItems(this, targetCreature, false, caster);
+
+                            if (targetPlayer != null)
+                                UpdatePKTimers(this, targetPlayer);
+                        }
+                        else
+                            Proficiency.OnSuccessUse(this, GetCreatureSkill(Skill.LifeMagic), spell.PowerMod);
+                    }
+
+                    if (targetDeath == true)
+                    {
+                        targetCreature.OnDeath(new DamageHistoryInfo(this), DamageType.Health, false);
+                        targetCreature.Die();
+                    }
+                    else
+                    {
+                        if (enchantmentStatus.Message != null)
+                            Session.Network.EnqueueSend(enchantmentStatus.Message);
+                    }
+                    break;
+
                 case MagicSchool.ItemEnchantment:
 
                     TryCastItemEnchantment_WithRedirects(spell, target, itemCaster);
@@ -1093,45 +1237,6 @@ namespace ACE.Server.WorldObjects
                         if (playerRedirect != null)
                             UpdatePKTimers(this, playerRedirect);
                     }
-                    break;
-
-                default:
-
-                    if (!spell.IsProjectile)
-                    {
-                        if (targetPlayer == null)
-                            OnAttackMonster(targetCreature);
-
-                        if (TryResistSpell(target, spell, itemCaster))
-                            break;
-
-                        if (targetCreature != null && targetCreature.NonProjectileMagicImmune)
-                        {
-                            Session.Network.EnqueueSend(new GameMessageSystemChat($"You fail to affect {targetCreature.Name} with {spell.Name}", ChatMessageType.Magic));
-                            break;
-                        }
-                    }
-
-                    HandleCastSpell(spell, target, itemCaster, caster, isWeaponSpell);
-
-                    if (!spell.IsProjectile)
-                    {
-                        if (spell.IsHarmful)
-                        {
-                            if (targetCreature != null)
-                                Proficiency.OnSuccessUse(this, GetCreatureSkill(spell.School), targetCreature.GetCreatureSkill(Skill.MagicDefense).Current);
-
-                            // handle target procs
-                            if (targetCreature != null && targetCreature != this)
-                                TryProcEquippedItems(this, targetCreature, false, caster);
-
-                            if (targetPlayer != null)
-                                UpdatePKTimers(this, targetPlayer);
-                        }
-                        else
-                            Proficiency.OnSuccessUse(this, GetCreatureSkill(spell.School), spell.PowerMod);
-                    }
-
                     break;
             }
         }
@@ -1435,6 +1540,57 @@ namespace ACE.Server.WorldObjects
         {
             if (!SquelchManager.Squelches.Contains(source, msgType))
                 Session.Network.EnqueueSend(new GameMessageSystemChat(msg, msgType));
+        }
+
+        public List<Creature> GetMagicCleaveTarget(Creature target, WorldObject weapon)
+        {
+            var player = this as Player;
+
+            if (!weapon.IsCleaving) return null;
+
+            // sort visible objects by ascending distance
+            var visible = PhysicsObj.ObjMaint.GetVisibleObjectsValuesWhere(o => o.WeenieObj.WorldObject != null);
+            visible.Sort(DistanceComparator);
+
+            var cleaveTargets = new List<Creature>();
+            var totalCleaves = weapon.CleaveTargets;
+
+            foreach (var obj in visible)
+            {
+                if (target == null)
+                    return null;
+                if (obj.ID == target.PhysicsObj.ID || target == null)
+                    continue;
+
+                // only cleave creatures
+                var creature = obj.WeenieObj.WorldObject as Creature;
+                if (creature == null || creature.Teleporting || creature.IsDead) continue;
+
+                if (player != null && player.CheckPKStatusVsTarget(creature, null) != null)
+                    continue;
+
+                if (!creature.Attackable && creature.TargetingTactic == TargetingTactic.None || creature.Teleporting)
+                    continue;
+
+                if (creature is CombatPet && (player != null || this is CombatPet))
+                    continue;
+
+                // no objects in cleave range
+                var cylDist = GetCylinderDistance(creature);
+                if (cylDist > MagicCleaveCylRange)
+                    return cleaveTargets;
+
+                // only cleave in front of attacker
+                var angle = GetAngle(creature);
+                if (Math.Abs(angle) > CleaveAngle / 2.0f)
+                    continue;
+
+                // found cleavable object
+                cleaveTargets.Add(creature);
+                if (cleaveTargets.Count == totalCleaves)
+                    break;
+            }
+            return cleaveTargets;
         }
     }
 }

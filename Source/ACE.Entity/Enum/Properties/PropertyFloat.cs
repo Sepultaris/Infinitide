@@ -216,7 +216,9 @@ namespace ACE.Entity.Enum.Properties
         [ServerOnly]
         PCAPRecordeOmegaY              = 8017,
         [ServerOnly]
-        PCAPRecordeOmegaZ              = 8018
+        PCAPRecordeOmegaZ              = 8018,
+
+        WeaponBaseDamageMod            = 8018,
     }
 
     public static class PropertyFloatExtensions
