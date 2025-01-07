@@ -192,7 +192,12 @@ namespace ACE.Server.WorldObjects
             if (!item.HasItemSet)
             {
                 ApplyDamageAndArmorBonuses(item, (item.ItemLevel.Value - prevItemLevel));
-                ApplyRendAndSlayer(item);
+
+                if (item.ItemType == ItemType.Weapon)
+                {
+                    ApplyRendAndSlayer(item);
+                }
+                
                 return;
             }
 
@@ -208,7 +213,10 @@ namespace ACE.Server.WorldObjects
 
             ApplyDamageAndArmorBonuses(item, (item.ItemLevel.Value - prevItemLevel));
 
-            ApplyRendAndSlayer(item);
+            if (item.ItemType == ItemType.Weapon)
+            {
+                ApplyRendAndSlayer(item);
+            }
         }
 
         public void CreateSentinelBuffPlayers(IEnumerable<Player> players, bool self = false, ulong maxLevel = 8)
