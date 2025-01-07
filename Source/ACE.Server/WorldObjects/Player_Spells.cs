@@ -707,34 +707,37 @@ namespace ACE.Server.WorldObjects
                 }
                 else if (item is Clothing clothing)
                 {
-                    int baseArmorLevel = (int)clothing.BaseArmorLevel;
-
-                    int maxBonus = (int)(baseArmorLevel * 0.15);
-
-                    float bonusPerLevel = maxBonus / 100f;
-
-                    int bonusForCurrentItemLevel = (int)(bonusPerLevel * clothing.ItemLevel);
-
-                    int numberOfSteelTinks = 0;
-
-                    if (clothing.TinkerLog != null)
+                    if (clothing.BaseArmorLevel != null)
                     {
-                        if (clothing.TinkerLog.Count() > 0)
+                        int baseArmorLevel = (int)clothing.BaseArmorLevel;
+
+                        int maxBonus = (int)(baseArmorLevel * 0.15);
+
+                        float bonusPerLevel = maxBonus / 100f;
+
+                        int bonusForCurrentItemLevel = (int)(bonusPerLevel * clothing.ItemLevel);
+
+                        int numberOfSteelTinks = 0;
+
+                        if (clothing.TinkerLog != null)
                         {
-                            int targetNumber = 64;
+                            if (clothing.TinkerLog.Count() > 0)
+                            {
+                                int targetNumber = 64;
 
-                            numberOfSteelTinks = clothing.TinkerLog.Split(',').Count(num => int.TryParse(num, out int n) && n == targetNumber);
+                                numberOfSteelTinks = clothing.TinkerLog.Split(',').Count(num => int.TryParse(num, out int n) && n == targetNumber);
+                            }
                         }
-                    }
 
-                    int armorFromSteelTinks = numberOfSteelTinks * 20;
+                        int armorFromSteelTinks = numberOfSteelTinks * 20;
 
-                    for (int j = 0; j < levelsGained; j++)
-                    {
-                        if (bonusForCurrentItemLevel > maxBonus)
-                            bonusForCurrentItemLevel = maxBonus;
+                        for (int j = 0; j < levelsGained; j++)
+                        {
+                            if (bonusForCurrentItemLevel > maxBonus)
+                                bonusForCurrentItemLevel = maxBonus;
 
-                        clothing.ArmorLevel = clothing.BaseArmorLevel + bonusForCurrentItemLevel + armorFromSteelTinks;
+                            clothing.ArmorLevel = clothing.BaseArmorLevel + bonusForCurrentItemLevel + armorFromSteelTinks;
+                        }
                     }
                 }
             }
@@ -801,7 +804,7 @@ namespace ACE.Server.WorldObjects
                 }
             }
 
-            if (ItemLevel == item.MaxLevel)
+            if (ItemLevel == 100)
             {
                 var monsterKillHistory = item.GetMonsterKillHistory();
 
@@ -814,6 +817,10 @@ namespace ACE.Server.WorldObjects
                     foreach (var entry in maxEntries)
                     {
                         item.SlayerCreatureType = (CreatureType?)entry.Key;
+                        item.SlayerDamageBonus = 1.25f;
+
+                        var updateSlayerBonus = new GameMessagePrivateUpdatePropertyFloat(item, PropertyFloat.SlayerDamageBonus, SlayerDamageBonus ?? 1.25f);
+                        Session.Network.EnqueueSend(updateSlayerBonus);
                     }
                 }
             }
