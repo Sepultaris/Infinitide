@@ -827,7 +827,7 @@ namespace ACE.Server.WorldObjects
                         item.SlayerCreatureType = (CreatureType?)entry.Key;
                         item.SlayerDamageBonus = 1.25f;
 
-                        var updateSlayerBonus = new GameMessagePrivateUpdatePropertyFloat(item, PropertyFloat.SlayerDamageBonus, SlayerDamageBonus ?? 1.25f);
+                        var updateSlayerBonus = new GameMessagePrivateUpdatePropertyFloat(item, PropertyFloat.SlayerDamageBonus, 1.25f);
                         Session.Network.EnqueueSend(updateSlayerBonus);
                     }
                 }
