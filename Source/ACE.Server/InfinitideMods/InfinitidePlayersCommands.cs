@@ -47,7 +47,7 @@ namespace ACE.Server.Command.Handlers
 
             if (parameters.Length < 1)
             {
-                ChatPacket.SendServerMessage(session, "Usage: /raise <str/end/coord/quick/focus/self/hp/stam/mp/mana> (for 10 billion exp) <destruction/invulnerability/glory/temperance/vitality> (for 10,000,000 luminance) [number of points to purchase (default: 1)]", ChatMessageType.Broadcast);
+                ChatPacket.SendServerMessage(session, "Usage: /raise <str/end/coord/quick/focus/self/hp/stam/mp/mana> <destruction/invulnerability/glory/temperance/vitality>", ChatMessageType.Broadcast);
                 return;
             }
             int result = 1;
@@ -72,18 +72,20 @@ namespace ACE.Server.Command.Handlers
 
                 for (int i = 0; i < result; i++)
                 {
+                    var costToRaise = GetXPForAttributeRaise(player.RaisedHealth);
+
                     if (GetXPForAttributeRaise(player.RaisedHealth) > player.AvailableExperience)
                     {
                         player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxHealth]));
                         ChatPacket.SendServerMessage(session, string.Format("Your Maximum Health has been increased by {0}.", i), ChatMessageType.Broadcast);
-                        ChatPacket.SendServerMessage(session, $"Not enough experience for remaining point. You need at least", ChatMessageType.Broadcast);
+                        ChatPacket.SendServerMessage(session, $"Not enough experience for remaining points, you require {costToRaise:N0} XP.", ChatMessageType.Broadcast);
                         return;
                     }
                     if (!player.SpendXP(GetXPForAttributeRaise(player.RaisedHealth)))
                     {
                         player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxHealth]));
                         ChatPacket.SendServerMessage(session, string.Format("Your Maximum Health has been increased by {0}.", i), ChatMessageType.Broadcast);
-                        ChatPacket.SendServerMessage(session, "Not enough experience for remaining points.", ChatMessageType.Broadcast);
+                        ChatPacket.SendServerMessage(session, $"Not enough experience for remaining points, you require {costToRaise:N0} XP.", ChatMessageType.Broadcast);
                         return;
                     }
                     CreatureVital creatureVital = new CreatureVital(player, PropertyAttribute2nd.MaxHealth);
@@ -106,18 +108,20 @@ namespace ACE.Server.Command.Handlers
             {
                 for (int j = 0; j < result; j++)
                 {
+                    var costToRaise = GetXPForAttributeRaise(player.RaisedStamina);
+
                     if (GetXPForAttributeRaise(player.RaisedStamina) > player.AvailableExperience)
                     {
                         player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxStamina]));
                         ChatPacket.SendServerMessage(session, string.Format("Your Maximum Stamina has been increased by {0}.", j), ChatMessageType.Broadcast);
-                        ChatPacket.SendServerMessage(session, "Not enough experience for remaining points.", ChatMessageType.Broadcast);
+                        ChatPacket.SendServerMessage(session, $"Not enough experience for remaining points, you require {costToRaise:N0} XP.", ChatMessageType.Broadcast);
                         return;
                     }
                     if (!player.SpendXP(GetXPForAttributeRaise(player.RaisedStamina)))
                     {
                         player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxStamina]));
                         ChatPacket.SendServerMessage(session, string.Format("Your Maximum Stamina has been increased by {0}.", j), ChatMessageType.Broadcast);
-                        ChatPacket.SendServerMessage(session, "Not enough experience for remaining points.", ChatMessageType.Broadcast);
+                        ChatPacket.SendServerMessage(session, $"Not enough experience for remaining points, you require {costToRaise:N0} XP.", ChatMessageType.Broadcast);
                         return;
                     }
                     CreatureVital creatureVital3 = new CreatureVital(player, PropertyAttribute2nd.MaxStamina);
@@ -157,7 +161,7 @@ namespace ACE.Server.Command.Handlers
                     {
                         player.Session.Network.EnqueueSend(new GameMessagePrivateUpdatePropertyInt(player, PropertyInt.LumAugDamageRating, _luminanceRating));
                         ChatPacket.SendServerMessage(session, string.Format("Your Luminance Augmentation Damage Rating has been increased by {0}.", j), ChatMessageType.Broadcast);
-                        ChatPacket.SendServerMessage(session, $"Not enough Luminance for remaining points, you require {destructioncost} luminance.", ChatMessageType.Broadcast);
+                        ChatPacket.SendServerMessage(session, $"Not enough Luminance for remaining points, you require {destructioncost:N0} luminance.", ChatMessageType.Broadcast);
                         return;
                     }
                     player.LumAugDamageRating++;
@@ -187,7 +191,7 @@ namespace ACE.Server.Command.Handlers
                     {
                         player.Session.Network.EnqueueSend(new GameMessagePrivateUpdatePropertyInt(player, PropertyInt.LumAugDamageReductionRating, _luminanceRating));
                         ChatPacket.SendServerMessage(session, string.Format("Your Luminance Augmentation Damage Reduction Rating has been increased by {0}.", j), ChatMessageType.Broadcast);
-                        ChatPacket.SendServerMessage(session, $"Not enough Luminance for remaining points, you require {invulnerabilitycost} luminance.", ChatMessageType.Broadcast);
+                        ChatPacket.SendServerMessage(session, $"Not enough Luminance for remaining points, you require {invulnerabilitycost:N0} luminance.", ChatMessageType.Broadcast);
                         return;
                     }
                     player.LumAugDamageReductionRating++;
@@ -217,7 +221,7 @@ namespace ACE.Server.Command.Handlers
                     {
                         player.Session.Network.EnqueueSend(new GameMessagePrivateUpdatePropertyInt(player, PropertyInt.LumAugCritDamageRating, _luminanceRating));
                         ChatPacket.SendServerMessage(session, string.Format("Your Luminance Augmentation Critical Damage Rating has been increased by {0}.", j), ChatMessageType.Broadcast);
-                        ChatPacket.SendServerMessage(session, $"Not enough Luminance for remaining points, you require {glorycost} luminance.", ChatMessageType.Broadcast);
+                        ChatPacket.SendServerMessage(session, $"Not enough Luminance for remaining points, you require {glorycost:N0} luminance.", ChatMessageType.Broadcast);
                         return;
                     }
                     player.LumAugCritDamageRating++;
@@ -247,7 +251,7 @@ namespace ACE.Server.Command.Handlers
                     {
                         player.Session.Network.EnqueueSend(new GameMessagePrivateUpdatePropertyInt(player, PropertyInt.LumAugCritReductionRating, _luminanceRating));
                         ChatPacket.SendServerMessage(session, string.Format("Your Luminance Augmentation Critical Damage Reduction Rating has been increased by {0}.", j), ChatMessageType.Broadcast);
-                        ChatPacket.SendServerMessage(session, $"Not enough Luminance for remaining points, you require {temperancecost} luminance.", ChatMessageType.Broadcast);
+                        ChatPacket.SendServerMessage(session, $"Not enough Luminance for remaining points, you require {temperancecost:N0} luminance.", ChatMessageType.Broadcast);
                         return;
                     }
                     player.LumAugCritReductionRating++;
@@ -320,18 +324,20 @@ namespace ACE.Server.Command.Handlers
             {
                 for (int k = 0; k < result; k++)
                 {
+                    var costToRaise = GetXPForAttributeRaise(player.RaisedMana);
+
                     if (GetXPForAttributeRaise(player.RaisedMana) > player.AvailableExperience)
                     {
                         player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxMana]));
                         ChatPacket.SendServerMessage(session, string.Format("Your Maximum Mana has been increased by {0}.", k), ChatMessageType.Broadcast);
-                        ChatPacket.SendServerMessage(session, "Not enough experience for remaining points, you require 10 billion(10,000,000,000) XP per point.", ChatMessageType.Broadcast);
+                        ChatPacket.SendServerMessage(session, $"Not enough experience for remaining points, you require {costToRaise:N0} XP.", ChatMessageType.Broadcast);
                         return;
                     }
                     if (!player.SpendXP(GetXPForAttributeRaise(player.RaisedMana)))
                     {
                         player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxMana]));
                         ChatPacket.SendServerMessage(session, string.Format("Your Maximum Mana has been increased by {0}.", k), ChatMessageType.Broadcast);
-                        ChatPacket.SendServerMessage(session, "Not enough experience for remaining points, you require 10 billion(10,000,000,000) XP per point.", ChatMessageType.Broadcast);
+                        ChatPacket.SendServerMessage(session, $"Not enough experience for remaining points, you require {costToRaise:N0} XP.", ChatMessageType.Broadcast);
                         return;
                     }
                     CreatureVital creatureVital5 = new CreatureVital(player, PropertyAttribute2nd.MaxMana);
@@ -380,20 +386,23 @@ namespace ACE.Server.Command.Handlers
             {
                 if (GetXPForAttributeRaise((int)player.Attributes[result2].StartingValue) > player.AvailableExperience)
                 {
+                    var costToRaise = GetXPForAttributeRaise((int)player.Attributes[result2].StartingValue);
+
                     player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateAttribute(player, player.Attributes[result2]));
                     ChatPacket.SendServerMessage(session, string.Format("Your {0} has been increased by {1}.", result2.ToString(), l), ChatMessageType.Broadcast);
-                    ChatPacket.SendServerMessage(session, "Not enough experience for remaining points, you require 10 billion(10,000,000,000) XP per point.", ChatMessageType.Broadcast);
+                    ChatPacket.SendServerMessage(session, $"Not enough experience for remaining points, you require {costToRaise:N0} XP.", ChatMessageType.Broadcast);
                     return;
                 }
                 if (!player.SpendXP(GetXPForAttributeRaise((int)player.Attributes[result2].StartingValue)))
                 {
+                    var costToRaise = GetXPForAttributeRaise((int)player.Attributes[result2].StartingValue);
+
                     player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateAttribute(player, player.Attributes[result2]));
                     ChatPacket.SendServerMessage(session, string.Format("Your {0} has been increased by {1}.", result2.ToString(), l), ChatMessageType.Broadcast);
-                    ChatPacket.SendServerMessage(session, "Not enough experience for remaining points, you require 10 billion(10,000,000,000) XP per point.", ChatMessageType.Broadcast);
+                    ChatPacket.SendServerMessage(session, $"Not enough experience for remaining points, you require {costToRaise:N0} XP.", ChatMessageType.Broadcast);
                     return;
                 }
                 player.Attributes[result2].StartingValue++;
-
             }
             player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateAttribute(player, player.Attributes[result2]));
             ChatPacket.SendServerMessage(session, string.Format("Your {0} has been increased by {1}.", result2.ToString(), result), ChatMessageType.Broadcast);
@@ -427,6 +436,129 @@ namespace ACE.Server.Command.Handlers
             }
         }
 
+        [CommandHandler("raisecost", AccessLevel.Player, CommandHandlerFlag.RequiresWorld, 1, "Displays the cost to raise for a given attribute or luminance augmentation rating.")]
+        public static void HandleRaiseCost(ISession session, params string[] parameters)
+        {
+            if (parameters[0].Equals("str") || parameters[0].Equals("strength"))
+            {
+                parameters[0] = "Strength";
+            }
+            else if (parameters[0].Equals("end") || parameters[0].Equals("endurance"))
+            {
+                parameters[0] = "Endurance";
+            }
+            else if (parameters[0].Equals("coord") || parameters[0].Equals("coordination"))
+            {
+                parameters[0] = "Coordination";
+            }
+            else if (parameters[0].Equals("quick") || parameters[0].Equals("quickness"))
+            {
+                parameters[0] = "Quickness";
+            }
+            else if (parameters[0].Equals("focus") || parameters[0].Equals("focus"))
+            {
+                parameters[0] = "Focus";
+            }
+            else if (parameters[0].Equals("self") || parameters[0].Equals("self"))
+            {
+                parameters[0] = "Self";
+            }
+            else if (parameters[0].Equals("health"))
+                parameters[0] = "Health";
+            else if (parameters[0].Equals("stamina"))
+                parameters[0] = "Stamina";
+            else if (parameters[0].Equals("mana"))
+                parameters[0] = "Mana";
+            else if (parameters[0].Equals("destruction"))
+                parameters[0] = "Destruction";
+
+            /*PropertyAttribute result2;
+            if (!System.Enum.TryParse<PropertyAttribute>(parameters[0], out result2))
+            {
+                ChatPacket.SendServerMessage(session, "Invalid Attribute, valid values are: Strength,Endurance,Coordination,Quickness,Focus,Self,Health,Stamina,Mana", ChatMessageType.Broadcast);
+                return;
+            }*/
+
+            if (parameters[0] == "Strength")
+            {
+                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedStr);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Strength", ChatMessageType.Broadcast);
+                return;
+            }
+            else if (parameters[0] == "Endurance")
+            {
+                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedEnd);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Endurance", ChatMessageType.Broadcast);
+                return;
+            }
+            else if (parameters[0] == "Coordination")
+            {
+                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedCoord);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Coordination", ChatMessageType.Broadcast);
+                return;
+            }
+            else if (parameters[0] == "Quickness")
+            {
+                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedQuick);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Quickness", ChatMessageType.Broadcast);
+                return;
+            }
+            else if (parameters[0] == "Focus")
+            {
+                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedFocus);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Focus", ChatMessageType.Broadcast);
+                return;
+            }
+            else if (parameters[0] == "Self")
+            {
+                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedSelf);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Self", ChatMessageType.Broadcast);
+                return;
+            }
+            else if (parameters[0] == "Health")
+            {
+                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedHealth);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Health", ChatMessageType.Broadcast);
+                return;
+            }
+            else if (parameters[0] == "Stamina")
+            {
+                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedStamina);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Stamina", ChatMessageType.Broadcast);
+                return;
+            }
+            else if (parameters[0] == "Mana")
+            {
+                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedMana);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Mana", ChatMessageType.Broadcast);
+                return;
+            }
+            else if (parameters[0] == "Destruction")
+            {
+                var costToRaise = GetLumForAttributeRaise(session.Player.LumAugDamageRating);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} Luminance to raise Destruction", ChatMessageType.Broadcast);
+                return;
+            }
+            else if (parameters[0] == "Invulnerability")
+            {
+                var costToRaise = GetLumForAttributeRaise(session.Player.LumAugDamageReductionRating);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} Luminance to raise Invulnerability", ChatMessageType.Broadcast);
+                return;
+            }
+            else if (parameters[0] == "Glory")
+            {
+                var costToRaise = GetLumForAttributeRaise(session.Player.LumAugCritDamageRating);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} Luminance to raise Glory", ChatMessageType.Broadcast);
+                return;
+            }
+            else if (parameters[0] == "Temperance")
+            {
+                var costToRaise = GetLumForAttributeRaise(session.Player.LumAugCritReductionRating);
+                ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} Luminance to raise Temperance", ChatMessageType.Broadcast);
+                return;
+            }
+        }
+
         public static long GetXPForAttributeRaise(int level)
         {
             // Set initial cost and growth factor
@@ -442,7 +574,7 @@ namespace ACE.Server.Command.Handlers
         {
             // Set initial cost and growth factor
             long baseCost = 1200000; 
-            double growthRate = 1.00035; 
+            double growthRate = 1.035; 
 
             // Calculate the cost to raise an attribute at this level
             long xpCost = (long)(baseCost * Math.Pow(growthRate, level - 1));

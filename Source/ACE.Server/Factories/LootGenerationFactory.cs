@@ -341,9 +341,9 @@ namespace ACE.Server.Factories
                         obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
                     }
 
-                        // Wearables
+                    // Wearables
 
-                        double gearGrowthRate = 1.35;
+                    double gearGrowthRate = 1.35;
                     var gearRating = (int)Math.Round(1 * Math.Pow(gearGrowthRate, instanceLevel * 0.015) + ThreadSafeRandom.Next(1, 3));
 
                     if (obj.ItemType == ItemType.Clothing || obj.ItemType == ItemType.Armor)

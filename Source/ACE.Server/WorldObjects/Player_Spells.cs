@@ -193,9 +193,18 @@ namespace ACE.Server.WorldObjects
             {
                 ApplyDamageAndArmorBonuses(item, (item.ItemLevel.Value - prevItemLevel));
 
-                if (item.ItemType == ItemType.Weapon)
+                if (item.ItemType == ItemType.MissileWeapon || item.ItemType == ItemType.MeleeWeapon || item.ItemType == ItemType.Caster)
                 {
-                    ApplyRendAndSlayer(item);
+                    var monsterKillHistory = item.GetMonsterKillHistory();
+
+                    if (monsterKillHistory.Count > 0)
+                        ApplyRend(item);
+
+                    //if (item.ItemLevel == 1)
+                    //  ApplyRend(item);
+
+                    if (item.ItemLevel == 100)
+                        ApplySlayer(item);
                 }
                 
                 return;
@@ -212,11 +221,6 @@ namespace ACE.Server.WorldObjects
             EquipDequipItemFromSet(item, spells, prevSpells);
 
             ApplyDamageAndArmorBonuses(item, (item.ItemLevel.Value - prevItemLevel));
-
-            if (item.ItemType == ItemType.Weapon)
-            {
-                ApplyRendAndSlayer(item);
-            }
         }
 
         public void CreateSentinelBuffPlayers(IEnumerable<Player> players, bool self = false, ulong maxLevel = 8)
@@ -751,7 +755,7 @@ namespace ACE.Server.WorldObjects
             }
         }
 
-        public void ApplyRendAndSlayer(WorldObject item)
+        public void ApplyRend(WorldObject item)
         {
             var damageType = item.GetProperty(PropertyInt.DamageType);
 
@@ -811,8 +815,11 @@ namespace ACE.Server.WorldObjects
                     item.SetProperty(PropertyInt.ImbuedEffect, 16384);
                 }
             }
+        }
 
-            if (ItemLevel == 100)
+        public void ApplySlayer(WorldObject item)
+        {
+            if (item.ItemLevel == 100)
             {
                 var monsterKillHistory = item.GetMonsterKillHistory();
 
