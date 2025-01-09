@@ -2190,16 +2190,25 @@ namespace ACE.Server.WorldObjects
                     switch (spell.VitalDamageType)
                     {
                         case DamageType.Mana:
+                            if (spell.Level == 8)
+                                tryBoost = (int)ThreadSafeRandom.Next(spellTarget.Mana.MaxValue * 0.25f, spellTarget.Mana.MaxValue * 0.55f);
+                            
                             boost = spellTarget.UpdateVitalDelta(spellTarget.Mana, tryBoost);
                             srcVital = "mana";
 
                             break;
                         case DamageType.Stamina:
+                            if (spell.Level == 8)
+                                tryBoost = (int)ThreadSafeRandom.Next(spellTarget.Stamina.MaxValue * 0.25f, spellTarget.Stamina.MaxValue * 0.55f);
+                            
                             boost = spellTarget.UpdateVitalDelta(spellTarget.Stamina, tryBoost);
                             srcVital = "stamina";
 
                             break;
                         default:   // Health
+                            if (spell.Level == 8)
+                                tryBoost = (int)ThreadSafeRandom.Next(spellTarget.Health.MaxValue * 0.25f, spellTarget.Health.MaxValue * 0.55f);
+                            
                             boost = spellTarget.UpdateVitalDelta(spellTarget.Health, tryBoost);
                             srcVital = "health";
 

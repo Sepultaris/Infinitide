@@ -1083,28 +1083,7 @@ namespace ACE.Server.WorldObjects
             switch (spell.School)
             {
                 case MagicSchool.WarMagic:
-                    if (caster.IsCleaving)
-                    {
-                        if (target != null)
-                        {
-                            WarMagic(target, spell, caster, isWeaponSpell);
-                            var cleave = GetMagicCleaveTarget(targetCreature, caster);
-                            var warChannelRoll = ThreadSafeRandom.Next((float)0.0, 1.0f);
-                            var warChannelChance = 0.10f;
-                            var warMagicSkill = GetCreatureSkill(Skill.WarMagic);
-                            var currentUnixTime = (uint)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-
-                            foreach (var cleaveHit in cleave)
-                            {
-                                WarMagic(cleaveHit, spell, caster, isWeaponSpell);
-                            }
-                            
-                            break;
-                        }
-                        else
-                            WarMagic(target, spell, caster, isWeaponSpell);
-                    }
-                    else
+                    
                         WarMagic(target, spell, caster, isWeaponSpell);
 
                     break;

@@ -48,21 +48,17 @@ namespace ACE.Server.WorldObjects
                     var baseMaxHealth = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxHealth).Value;
                     var baseMaxStamina = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxStamina).Value;
                     var baseMaxMana = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxMana).Value;
-                    var baseStrength = Strength.Base;
-                    var baseEndurance = Endurance.Base;
-                    var baseCoordination = Coordination.Base;
-                    var baseQuickness = Quickness.Base;
-                    var baseSelf = Self.Base;
-                    var baseFocus = Focus.Base;
-                    uint newHealthValue = (uint)((baseMaxHealth * Math.Pow(1.006, instanceLevel / 10) / 10) * 0.3f);
+
+                    uint strength = (uint)(Strength.StartingValue * (uint)Math.Pow(1.005, instanceLevel / 10) / 10 * 0.3f);
+                    uint endurance = (uint)(Endurance.StartingValue * (uint)Math.Pow(1.0063, instanceLevel / 10) / 10 * 0.3f);
+                    uint coordination = (uint)(Coordination.StartingValue * (uint)Math.Pow(1.00767, instanceLevel / 10) / 10 * 0.3f);
+                    uint quickness = (uint)(Quickness.StartingValue * (uint)Math.Pow(1.00767, instanceLevel / 10) / 10 * 0.3f);
+                    uint self = (uint)(Self.StartingValue * (uint)Math.Pow(1.0062, instanceLevel / 10) / 10 * 0.3f);
+                    uint focus = (uint)(Focus.StartingValue * (uint)Math.Pow(1.0062, instanceLevel / 10) / 10 * 0.3f);
+
+                    uint newHealthValue = (uint)((baseMaxHealth * Math.Pow(1.007, instanceLevel / 10) / 10) * 0.3f);
                     uint newStaminaValue = (uint)((baseMaxStamina * Math.Pow(1.006, instanceLevel / 10) / 10) * 0.3f);
                     uint newManaValue = (uint)((baseMaxMana * Math.Pow(1.006, instanceLevel / 10) / 10) * 0.3f);
-                    uint newStrength = (uint)((baseStrength * Math.Pow(1.01, instanceLevel / 10) / 10) * 0.3f);
-                    uint newEndurance = (uint)((baseEndurance * Math.Pow(1.01, instanceLevel / 10) / 10) * 0.3f);
-                    uint newCoordination = (uint)((baseCoordination * Math.Pow(1.01, instanceLevel / 10) / 10) * 0.3f);
-                    uint newQuickness = (uint)((baseQuickness * Math.Pow(1.01, instanceLevel / 10) / 10) * 0.3f);
-                    uint newSelf = (uint)((baseSelf * Math.Pow(1.01, instanceLevel / 10) / 10) * 0.3f);
-                    uint newFocus = (uint)((baseFocus * Math.Pow(1.01, instanceLevel / 10) / 10) * 0.3f);
 
                     if (Vitals.ContainsKey(PropertyAttribute2nd.MaxHealth))
                         Vitals[PropertyAttribute2nd.MaxHealth].Ranks = newHealthValue;
@@ -74,22 +70,22 @@ namespace ACE.Server.WorldObjects
                         Vitals[PropertyAttribute2nd.MaxMana].Ranks = newManaValue;
 
                     if (Attributes.ContainsKey(PropertyAttribute.Strength))
-                        Attributes[PropertyAttribute.Strength].Ranks = newStrength;
+                        Attributes[PropertyAttribute.Strength].Ranks = strength;
 
                     if (Attributes.ContainsKey(PropertyAttribute.Endurance))
-                        Attributes[PropertyAttribute.Endurance].Ranks = newEndurance;
+                        Attributes[PropertyAttribute.Endurance].Ranks = endurance;
 
                     if (Attributes.ContainsKey(PropertyAttribute.Coordination))
-                        Attributes[PropertyAttribute.Coordination].Ranks = newCoordination;
+                        Attributes[PropertyAttribute.Coordination].Ranks = coordination;
 
                     if (Attributes.ContainsKey(PropertyAttribute.Quickness))
-                        Attributes[PropertyAttribute.Quickness].Ranks = newQuickness;
+                        Attributes[PropertyAttribute.Quickness].Ranks = quickness;
 
                     if (Attributes.ContainsKey(PropertyAttribute.Focus))
-                        Attributes[PropertyAttribute.Focus].Ranks = newFocus;
+                        Attributes[PropertyAttribute.Focus].Ranks = self;
 
                     if (Attributes.ContainsKey(PropertyAttribute.Self))
-                        Attributes[PropertyAttribute.Self].Ranks = newSelf;
+                        Attributes[PropertyAttribute.Self].Ranks = focus;
 
                     Health.Current = Health.MaxValue;
                     Stamina.Current = Stamina.MaxValue;

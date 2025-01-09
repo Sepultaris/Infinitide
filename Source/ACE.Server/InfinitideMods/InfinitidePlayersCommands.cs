@@ -561,22 +561,18 @@ namespace ACE.Server.Command.Handlers
 
         public static long GetXPForAttributeRaise(int level)
         {
-            // Set initial cost and growth factor
-            long baseCost = 10000000000; // 10 billion XP
-            double growthRate = 1.00035; // Growth rate chosen to approximate 7,475 raises by level 10,000
+            long baseCost = 10000000000;
+            double growthRate = 1.00008835; //1.00035
 
-            // Calculate the cost to raise an attribute at this level
             long xpCost = (long)(baseCost * Math.Pow(growthRate, level - 1));
             return xpCost;
         }
 
         public static long GetLumForAttributeRaise(int level)
         {
-            // Set initial cost and growth factor
             long baseCost = 1200000; 
             double growthRate = 1.035; 
 
-            // Calculate the cost to raise an attribute at this level
             long xpCost = (long)(baseCost * Math.Pow(growthRate, level - 1));
             return xpCost;
         }

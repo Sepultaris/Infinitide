@@ -273,27 +273,8 @@ namespace ACE.Server.Factories
                         }
                     }
 
-                    // Roll Cleave and extra properties.
-
                     if (obj.ItemType == ItemType.MeleeWeapon)
                     {
-                        if (obj.IsCleaving)
-                        {
-                            int cleavingRoll = ThreadSafeRandom.Next(2, 5);
-
-                            obj.SetProperty(PropertyInt.Cleaving, cleavingRoll);
-                        }
-                        else
-                        {
-                            var cleavingChance = ThreadSafeRandom.Next(0.00f, 1.00f);
-
-                            if (cleavingChance <= 0.2f)
-                            {
-                                int cleavingRoll = ThreadSafeRandom.Next(2, 5);
-
-                                obj.SetProperty(PropertyInt.Cleaving, cleavingRoll);
-                            }
-                        }
                         var maxlevel = 100;
                         var basexp = 1000000000;
 
@@ -305,14 +286,6 @@ namespace ACE.Server.Factories
 
                     if (obj.ItemType == ItemType.MissileWeapon)
                     {
-                        var cleavingChance = ThreadSafeRandom.Next(0.00f, 1.00f);
-
-                        if (cleavingChance <= 0.2f)
-                        {
-                            int cleavingRoll = ThreadSafeRandom.Next(2, 3);
-
-                            obj.SetProperty(PropertyInt.Cleaving, cleavingRoll);
-                        }
                         var maxlevel = 100;
                         var basexp = 1000000000;
 
@@ -324,14 +297,6 @@ namespace ACE.Server.Factories
 
                     if (obj.ItemType == ItemType.Caster)
                     {
-                        var cleavingChance = ThreadSafeRandom.Next(0.00f, 1.00f);
-
-                        if (cleavingChance <= 0.2f)
-                        {
-                            int cleavingRoll = 2;
-
-                            obj.SetProperty(PropertyInt.Cleaving, cleavingRoll);
-                        }
                         var maxlevel = 100;
                         var basexp = 1000000000;
 
@@ -344,7 +309,7 @@ namespace ACE.Server.Factories
                     // Wearables
 
                     double gearGrowthRate = 1.35;
-                    var gearRating = (int)Math.Round(1 * Math.Pow(gearGrowthRate, instanceLevel * 0.015) + ThreadSafeRandom.Next(1, 3));
+                    var gearRating = (int)Math.Round(1 * Math.Pow(gearGrowthRate, instanceLevel * 0.0015) + ThreadSafeRandom.Next(1, 3));
 
                     if (obj.ItemType == ItemType.Clothing || obj.ItemType == ItemType.Armor)
                     {
@@ -357,7 +322,7 @@ namespace ACE.Server.Factories
                                     obj.ArmorLevel = obj.ArmorLevel - 80;
                                 }
                                 var armorLevel = obj.ArmorLevel + instanceLevel / 100;
-                                double growthRate = 1.0008;
+                                double growthRate = 1.007;
                                 var curve = armorLevel * Math.Pow(growthRate, (double)armorLevel);
                                 obj.ArmorLevel = (int?)curve;
                                 obj.BaseArmorLevel = obj.ArmorLevel;

@@ -14,9 +14,6 @@ namespace ACE.Server.WorldObjects
     {
         private float _accuracyLevel;
 
-        public static readonly float MissileCleaveCylRange = 4.0f;
-        public static readonly float MissileCleaveAngle = 180.0f;
-
         public float AccuracyLevel
         {
             get => IsExhausted ? 0.0f : _accuracyLevel;
@@ -247,25 +244,6 @@ namespace ACE.Server.WorldObjects
 
                 var projectile = LaunchProjectile(launcher, ammo, target, origin, orientation, velocity);
                 UpdateAmmoAfterLaunch(ammo);
-
-                if (weapon != null && weapon.IsCleaving)
-                {
-                    var cleave = GetMissileCleaveTarget(creature, weapon);
-
-                    foreach (var cleaveHit in cleave)
-                    {
-                        // target procs don't happen for cleaving
-                        /*DamageTarget(cleaveHit, weapon);*/
-                        /*LaunchCleaveMissile(cleaveHit, attackSequence, stance, subsequent = false);*/
-                        var projectileSpeed = GetProjectileSpeed();
-                        var aimVelocity = GetAimVelocity(cleaveHit, projectileSpeed);
-                        var localOrigin = GetProjectileSpawnOrigin(ammo.WeenieClassId, aimLevel);
-                        var velocity = CalculateProjectileVelocity(localOrigin, cleaveHit, projectileSpeed, out Vector3 origin, out Quaternion orientation);
-
-                        LaunchProjectile(launcher, ammo, cleaveHit, origin, orientation, velocity);
-                        UpdateAmmoAfterLaunch(ammo);
-                    }
-                }
             });
 
             // ammo remaining?
@@ -374,56 +352,6 @@ namespace ACE.Server.WorldObjects
             var maxRange = GetMaxMissileRange();
 
             return dist <= maxRange;
-        }
-
-        public List<Creature> GetMissileCleaveTarget(Creature target, WorldObject weapon)
-        {
-            var player = this as Player;
-
-            if (!weapon.IsCleaving) return null;
-
-            // sort visible objects by ascending distance
-            var visible = PhysicsObj.ObjMaint.GetVisibleObjectsValuesWhere(o => o.WeenieObj.WorldObject != null);
-            visible.Sort(DistanceComparator);
-
-            var cleaveTargets = new List<Creature>();
-            var totalCleaves = weapon.CleaveTargets;
-
-            foreach (var obj in visible)
-            {
-                // cleaving skips original target
-                if (obj.ID == target.PhysicsObj.ID || target == null)
-                    continue;
-
-                // only cleave creatures
-                var creature = obj.WeenieObj.WorldObject as Creature;
-                if (creature == null || creature.Teleporting || creature.IsDead) continue;
-
-                if (player != null && player.CheckPKStatusVsTarget(creature, null) != null)
-                    continue;
-
-                if (!creature.Attackable && creature.TargetingTactic == TargetingTactic.None || creature.Teleporting)
-                    continue;
-
-                if (creature is CombatPet && (player != null || this is CombatPet))
-                    continue;
-
-                // no objects in cleave range
-                var cylDist = GetCylinderDistance(creature);
-                if (cylDist > MissileCleaveCylRange)
-                    return cleaveTargets;
-
-                // only cleave in front of attacker
-                var angle = GetAngle(creature);
-                if (Math.Abs(angle) > MissileCleaveAngle / 2.0f)
-                    continue;
-
-                // found cleavable object
-                cleaveTargets.Add(creature);
-                if (cleaveTargets.Count == totalCleaves)
-                    break;
-            }
-            return cleaveTargets;
         }
     }
 }
