@@ -319,6 +319,28 @@ namespace ACE.Server.WorldObjects
                 else
                 {
                     DamageTarget(creatureTarget, damage.Value, critical, critDefended, overpower);
+
+                    if (player != null && Spell.School == MagicSchool.WarMagic)
+                    {
+
+                        var aoeRange = GetAoERange(player.GetCreatureSkill(Skill.WarMagic).Current);
+
+                        foreach (var aoeTarget in player.GetMagicAOETarget(player, creatureTarget, player.GetEquippedWeapon(), (float)aoeRange))
+                        {
+                            var aoeDamage = CalculateDamage(ProjectileSource, aoeTarget.Key, ref critical, ref critDefended, ref overpower) / 2;
+                            var cylDist = aoeTarget.Key.GetCylinderDistance(target);
+
+                            if (cylDist < 0)
+                                cylDist = 0;
+
+                            var scaledDamage = ScaleDamageByDistance((float)aoeDamage, cylDist, (float)aoeRange);
+
+                            if (scaledDamage <= 0)
+                                continue;
+
+                            DamageTarget(aoeTarget.Key, scaledDamage, critical, critDefended, overpower);
+                        }
+                    }
                 }
 
                 // if this SpellProjectile has a TargetEffect, play it on successful hit
@@ -370,6 +392,28 @@ namespace ACE.Server.WorldObjects
                 if (sourceCreature != null && creatureTarget != null && (sourceCreature.AllowFactionCombat(creatureTarget) || sourceCreature.PotentialFoe(creatureTarget)))
                     sourceCreature.MonsterOnAttackMonster(creatureTarget);
             }
+        }
+
+        public static double GetAoERange(double skillLevel)
+        {
+            double maxSkillLevel = 5000;
+            double minRange = 0.75;
+            double maxRange = 5.0;
+
+            if (skillLevel < 0 || skillLevel > maxSkillLevel)
+                throw new ArgumentOutOfRangeException(nameof(skillLevel), "Skill level must be between 0 and 5000.");
+
+            double normalizedSkill = skillLevel / maxSkillLevel;
+            return minRange + (maxRange - minRange) * normalizedSkill;
+        }
+
+        public float ScaleDamageByDistance(float baseDamage, float distance, float maxDistance)
+        {
+            if (distance >= maxDistance)
+                return 0;
+
+            float scale = 1 - (distance / maxDistance);
+            return baseDamage * scale;
         }
 
         /// <summary>
@@ -1001,5 +1045,6 @@ namespace ACE.Server.WorldObjects
 
             observer.DebugDamageBuffer = null;
         }
+        
     }
 }

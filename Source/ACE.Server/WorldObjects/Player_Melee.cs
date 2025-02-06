@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-
 using ACE.DatLoader.Entity.AnimationHooks;
 using ACE.Entity.Enum;
 using ACE.Server.Entity;
@@ -12,6 +11,7 @@ using ACE.Server.Physics.Animation;
 using ACE.Entity.Enum.Properties;
 using System.Numerics;
 using ACE.Common;
+using ACE.Entity;
 
 namespace ACE.Server.WorldObjects
 {
@@ -20,7 +20,6 @@ namespace ACE.Server.WorldObjects
     /// </summary>
     partial class Player
     {
-        public static readonly float GunBladeProjectileSpeed = 300.0f;
         /// <summary>
         /// The target this player is currently performing a melee attack on
         /// </summary>
@@ -52,7 +51,7 @@ namespace ACE.Server.WorldObjects
         /// <summary>
         /// Called when a player first initiates a melee attack
         /// </summary>
-        public void HandleActionTargetedMeleeAttack(ACE.Entity.ObjectGuid targetGuid, uint attackHeight, float powerLevel)
+        public void HandleActionTargetedMeleeAttack(ObjectGuid targetGuid, uint attackHeight, float powerLevel)
         {
             //log.Info($"-");
 
@@ -318,7 +317,6 @@ namespace ACE.Server.WorldObjects
                         Attack(target, attackSequence);
                     });
                     actionChain.EnqueueChain();
-
                 }
                 else
                 {
@@ -330,7 +328,6 @@ namespace ACE.Server.WorldObjects
                         Attack(target, attackSequence);
                     });
                     actionChain.EnqueueChain();
-
                 }
             }
             else if (dist <= MeleeDistance && ammo == null)
@@ -360,7 +357,10 @@ namespace ACE.Server.WorldObjects
                     });
                     actionChain.EnqueueChain();
                 }
+
+
             }
+            else OnAttackDone();
         }
 
         public void OnAttackDone(WeenieError error = WeenieError.None)
@@ -514,27 +514,7 @@ namespace ACE.Server.WorldObjects
 
                         foreach (var cleaveHit in cleave)
                         {
-                            // target procs don't happen for cleaving
-                            //var ammo = GetEquippedAmmo();
-                            if (ammo != null && ammo.WeenieClassId == 300444)
-                            {
-                                var projectileSpeed = GetGunBladeProjectileSpeed();
-                                var aimVelocity = GetAimVelocity(target, projectileSpeed);
-                                var aimLevel = GetAimLevel(aimVelocity);
-                                var localOrigin = GetProjectileSpawnOrigin(ammo.WeenieClassId, aimLevel);
-                                var velocity = CalculateProjectileVelocity(localOrigin, target, projectileSpeed, out Vector3 origin, out Quaternion orientation);
-
-                                DamageTarget(cleaveHit, weapon);
-                                LaunchProjectile(weapon, ammo, target, origin, orientation, velocity);
-
-                                if (ammo.StackSize != null)
-                                    UpdateAmmoAfterLaunch(ammo);
-                            }
-                            else
-                            {
-                                DamageTarget(cleaveHit, weapon);
-                            }
-
+                            DamageTarget(cleaveHit, weapon);
                         }
                     }
 
@@ -605,6 +585,12 @@ namespace ACE.Server.WorldObjects
                     nextAttack.AddDelaySeconds(nextRefillTime);
                     nextAttack.AddAction(this, () => Attack(target, attackSequence, true));
                     nextAttack.EnqueueChain();
+
+                    
+                }
+                else
+                {
+                    OnAttackDone();
                 }
             });
 
@@ -669,6 +655,9 @@ namespace ACE.Server.WorldObjects
                 numStrikes = attackFrames.Count;
             }
 
+            // handle self-procs
+            TryProcEquippedItems(this, this, true, weapon);
+
             var prevTime = 0.0f;
             var ammo = GetEquippedAmmo();
 
@@ -702,6 +691,8 @@ namespace ACE.Server.WorldObjects
                         return;
                     }
 
+                    // handle target procs                  
+
                     var ammo = GetEquippedAmmo();
 
                     if (weapon != null && weapon.IsCleaving && weapon.IsGunblade == true)
@@ -718,6 +709,11 @@ namespace ACE.Server.WorldObjects
                                 UpdateAmmoAfterLaunch(ammo);
                             }
                         }
+                    }
+
+                    if (weapon != null && weapon.IsGunblade == true && ammo == null)
+                    {
+                        TryProcEquippedItems(this, creature, false, weapon);
                     }
 
                     if (weapon != null && weapon.IsGunblade == true && ammo != null)
@@ -766,7 +762,7 @@ namespace ACE.Server.WorldObjects
                     nextAttack.AddAction(this, () => GunBladeAttack(target, attackSequence, true));
                     nextAttack.EnqueueChain();
 
-                    
+                    OnAttackDone();
                 }
             });
 
@@ -887,33 +883,6 @@ namespace ACE.Server.WorldObjects
             //Console.WriteLine($"{motion}");
 
             return motion;
-        }
-
-        public float GetGunBladeProjectileSpeed()
-        {
-            var gunBlade = GetEquippedMeleeWeapon();
-
-            var maxVelocity = gunBlade?.MaximumVelocity ?? GunBladeProjectileSpeed;
-
-            if (maxVelocity == 0.0f)
-            {
-                // log.Warn($"{Name}.GetMissileSpeed() - {gunBlade.Name} ({gunBlade.Guid}) has speed 0");
-
-                maxVelocity = GunBladeProjectileSpeed;
-            }
-
-            if (this is Player player && player.GetCharacterOption(CharacterOption.UseFastMissiles))
-            {
-                maxVelocity *= PropertyManager.GetDouble("fast_missile_modifier").Item;
-            }
-
-            // hard cap in physics engine
-            maxVelocity = Math.Min(maxVelocity, PhysicsGlobals.MaxVelocity);
-
-            //Console.WriteLine($"MaxVelocity: {maxVelocity}");
-
-
-            return (float)maxVelocity;
         }
     }
 }

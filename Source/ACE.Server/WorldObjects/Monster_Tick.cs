@@ -38,9 +38,6 @@ namespace ACE.Server.WorldObjects
 
             if (inSetLandblock)
             {
-                if (Level != Location.CalculateInstanceLevel(CurrentLandblock.Id))
-                    CreatureStatsUpdated = false;
-
                 if (this is not CombatPet && !CreatureStatsUpdated)
                 {
                     var instanceLevel = Location.CalculateInstanceLevel(CurrentLandblock.Id);
@@ -49,25 +46,25 @@ namespace ACE.Server.WorldObjects
                     var baseMaxStamina = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxStamina).Value;
                     var baseMaxMana = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxMana).Value;
 
-                    uint strength = (uint)(Strength.StartingValue * (uint)Math.Pow(1.005, instanceLevel / 10) / 10 * 0.3f);
-                    uint endurance = (uint)(Endurance.StartingValue * (uint)Math.Pow(1.0063, instanceLevel / 10) / 10 * 0.3f);
-                    uint coordination = (uint)(Coordination.StartingValue * (uint)Math.Pow(1.00767, instanceLevel / 10) / 10 * 0.3f);
-                    uint quickness = (uint)(Quickness.StartingValue * (uint)Math.Pow(1.00767, instanceLevel / 10) / 10 * 0.3f);
-                    uint self = (uint)(Self.StartingValue * (uint)Math.Pow(1.0062, instanceLevel / 10) / 10 * 0.3f);
-                    uint focus = (uint)(Focus.StartingValue * (uint)Math.Pow(1.0062, instanceLevel / 10) / 10 * 0.3f);
+                    uint strength = (uint)((uint)Math.Max(instanceLevel - 275, 0) * 0.59f);
+                    uint endurance = (uint)((uint)Math.Max(instanceLevel - 275, 0) * 8.8f);
+                    uint coordination = (uint)((uint)Math.Max(instanceLevel - 275, 0) * 0.59f);
+                    uint quickness = (uint)((uint)Math.Max(instanceLevel - 275, 0) * 0.59f);
+                    uint self = (uint)((uint)Math.Max(instanceLevel - 275, 0) * 0.59f);
+                    uint focus = (uint)((uint)Math.Max(instanceLevel - 275, 0) * 0.59f);
 
-                    uint newHealthValue = (uint)((baseMaxHealth * Math.Pow(1.007, instanceLevel / 10) / 10) * 0.3f);
-                    uint newStaminaValue = (uint)((baseMaxStamina * Math.Pow(1.006, instanceLevel / 10) / 10) * 0.3f);
-                    uint newManaValue = (uint)((baseMaxMana * Math.Pow(1.006, instanceLevel / 10) / 10) * 0.3f);
+                    uint newHealthValue = baseMaxHealth + ((uint)Math.Max(instanceLevel - 275, 0));
+                    uint newStaminaValue = baseMaxStamina + ((uint)Math.Max(instanceLevel - 275, 0));
+                    uint newManaValue = baseMaxMana + ((uint)Math.Max(instanceLevel - 275, 0));
 
                     if (Vitals.ContainsKey(PropertyAttribute2nd.MaxHealth))
-                        Vitals[PropertyAttribute2nd.MaxHealth].Ranks = newHealthValue;
+                        Vitals[PropertyAttribute2nd.MaxHealth].Current = newHealthValue;
 
                     if (Vitals.ContainsKey(PropertyAttribute2nd.MaxStamina))
-                        Vitals[PropertyAttribute2nd.MaxStamina].Ranks = newStaminaValue;
+                        Vitals[PropertyAttribute2nd.MaxStamina].Current = newStaminaValue;
 
                     if (Vitals.ContainsKey(PropertyAttribute2nd.MaxMana))
-                        Vitals[PropertyAttribute2nd.MaxMana].Ranks = newManaValue;
+                        Vitals[PropertyAttribute2nd.MaxMana].Current = newManaValue;
 
                     if (Attributes.ContainsKey(PropertyAttribute.Strength))
                         Attributes[PropertyAttribute.Strength].Ranks = strength;
@@ -91,7 +88,7 @@ namespace ACE.Server.WorldObjects
                     Stamina.Current = Stamina.MaxValue;
                     Mana.Current = Mana.MaxValue;
 
-                    Level = instanceLevel;
+                    Level = Level + Math.Max(instanceLevel - 275, 0); 
                     CreatureStatsUpdated = true;
                 }
             }

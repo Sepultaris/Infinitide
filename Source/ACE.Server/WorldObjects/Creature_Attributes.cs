@@ -7,7 +7,7 @@ namespace ACE.Server.WorldObjects
 {
     partial class Creature
     {
-        public readonly Dictionary<PropertyAttribute, CreatureAttribute> Attributes = new Dictionary<PropertyAttribute, CreatureAttribute>();
+        public Dictionary<PropertyAttribute, CreatureAttribute> Attributes = new Dictionary<PropertyAttribute, CreatureAttribute>();
 
         public CreatureAttribute Strength => Attributes[PropertyAttribute.Strength];
         public CreatureAttribute Endurance => Attributes[PropertyAttribute.Endurance];

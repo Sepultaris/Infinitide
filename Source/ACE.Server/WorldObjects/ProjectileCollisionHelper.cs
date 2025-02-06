@@ -1,5 +1,5 @@
 using System;
-
+using ACE.Common;
 using ACE.Entity.Enum;
 using ACE.Server.Entity;
 using ACE.Server.Entity.Actions;
@@ -40,6 +40,17 @@ namespace ACE.Server.WorldObjects
                 {
                     // player damage monster or player
                     damageEvent = sourcePlayer.DamageTarget(targetCreature, worldObject);
+
+                    if (damageEvent.Weapon.WeaponSkill == Skill.MissileWeapons)
+                    {
+                        var doubleAttackRoll = DoubleAttackRoll(sourcePlayer.GetCreatureSkill(Skill.MissileWeapons).Current);
+                        var roll = ThreadSafeRandom.Next(0.000f, 1.000f);
+
+                        if (roll < doubleAttackRoll && targetCreature.IsAlive)
+                        {
+                            sourcePlayer.DamageTarget(targetCreature, worldObject);
+                        }
+                    }
 
                     if (damageEvent != null && damageEvent.HasDamage)
                         worldObject.EnqueueBroadcast(new GameMessageSound(worldObject.Guid, Sound.Collision, 1.0f));
@@ -126,6 +137,20 @@ namespace ACE.Server.WorldObjects
             worldObject.PhysicsObj.set_active(false);
 
             worldObject.HitMsg = true;
+        }
+
+        public static double DoubleAttackRoll(double value)
+        {
+            double max = 5000;
+            double min = 0;
+
+            if (max == min)
+                throw new ArgumentException("DoubleAttackRoll(): Max and Min cannot be the same value.");
+
+            double normalized = (value - min) / (max - min);
+
+            // Clamp the result between 0.0 and 1.0
+            return Math.Max(0.000, Math.Min(1.000, normalized));
         }
 
         public static void OnCollideEnvironment(WorldObject worldObject)

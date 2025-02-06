@@ -207,6 +207,7 @@ namespace ACE.Server.WorldObjects
 
         // lowest value found in data / for starter bows
         public static readonly float DefaultProjectileSpeed = 20.0f;
+        public static readonly float GunBladeProjectileSpeed = 300.0f;
 
         public float GetProjectileSpeed()
         {
@@ -234,6 +235,32 @@ namespace ACE.Server.WorldObjects
             return (float)maxVelocity;
         }
 
+        public float GetGunBladeProjectileSpeed()
+        {
+            var gunBlade = GetEquippedMeleeWeapon();
+
+            var maxVelocity = gunBlade?.MaximumVelocity ?? GunBladeProjectileSpeed;
+
+            if (maxVelocity == 0.0f)
+            {
+                // log.Warn($"{Name}.GetMissileSpeed() - {gunBlade.Name} ({gunBlade.Guid}) has speed 0");
+
+                maxVelocity = GunBladeProjectileSpeed;
+            }
+
+            if (this is Player player && player.GetCharacterOption(CharacterOption.UseFastMissiles))
+            {
+                maxVelocity *= PropertyManager.GetDouble("fast_missile_modifier").Item;
+            }
+
+            // hard cap in physics engine
+            maxVelocity = Math.Min(maxVelocity, PhysicsGlobals.MaxVelocity);
+
+            //Console.WriteLine($"MaxVelocity: {maxVelocity}");
+
+
+            return (float)maxVelocity;
+        }
         public Vector3 GetAimVelocity(WorldObject target, float projectileSpeed)
         {
             var crossLandblock = Location.InstancedLandblock != target.Location.InstancedLandblock;

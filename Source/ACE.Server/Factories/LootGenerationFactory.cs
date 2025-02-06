@@ -1,31 +1,26 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-
-using log4net;
-
 using ACE.Common;
 using ACE.Database;
 using ACE.Database.Models.World;
+using ACE.Entity;
 using ACE.Entity.Enum;
 using ACE.Entity.Enum.Properties;
+using ACE.Server.Entity;
 using ACE.Server.Factories.Entity;
 using ACE.Server.Factories.Enum;
 using ACE.Server.Factories.Tables;
 using ACE.Server.Factories.Tables.Wcids;
 using ACE.Server.Managers;
-using ACE.Server.WorldObjects;
-
-using WeenieClassName = ACE.Server.Factories.Enum.WeenieClassName;
-using System.Collections.Immutable;
 using ACE.Server.Realms;
-using ACE.Entity;
-using ACE.Server.Entity;
+using ACE.Server.WorldObjects;
+using log4net;
 using log4net.Core;
-using ACE.Server.Network.Structure;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using WeenieClassName = ACE.Server.Factories.Enum.WeenieClassName;
 
 namespace ACE.Server.Factories
 {
@@ -165,187 +160,216 @@ namespace ACE.Server.Factories
 
         public static List<WorldObject> ScaleInstanceLoot(Landblock landblock,InstancedPosition landblockInstance, List<WorldObject> loot)
         {
-            var instanceLevel = landblockInstance.CalculateInstanceLevel(landblock.Id);
+            var highestPlayerLevel = landblockInstance.GetHighestPlayerLevelInInstance(landblock.Id);
 
-            if (loot.Count > 0)
+            if (highestPlayerLevel >= 275)
             {
-                foreach (var obj in loot)
+                if (loot.Count > 0)
                 {
-                    //Weapons
+                    foreach (var obj in loot)
+                    {
+                        //Weapons
 
-                    if (obj.W_WeaponType == WeaponType.Unarmed)
-                    {
-                        var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.0035;
-                        var curve = damage * Math.Pow(growthRate, (double)damage);
-                        obj.Damage = (int?)curve;
-                        obj.WeaponBaseDamage = (int?)curve;
-                    }
-                    if (obj.W_WeaponType == WeaponType.Sword)
-                    {
-                        var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.0035;
-                        var curve = damage * Math.Pow(growthRate, (double)damage);
-                        obj.Damage = (int?)curve;
-                        obj.WeaponBaseDamage = (int?)curve;
-                    }
-                    if (obj.W_WeaponType == WeaponType.Axe)
-                    {
-                        var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.0035;
-                        var curve = damage * Math.Pow(growthRate, (double)damage);
-                        obj.Damage = (int?)curve;
-                        obj.WeaponBaseDamage = (int?)curve;
-                    }
-                    if (obj.W_WeaponType == WeaponType.Mace)
-                    {
-                        var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.0035;
-                        var curve = damage * Math.Pow(growthRate, (double)damage);
-                        obj.Damage = (int?)curve;
-                        obj.WeaponBaseDamage = (int?)curve;
-                    }
-                    if (obj.W_WeaponType == WeaponType.Spear)
-                    {
-                        var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.0035;
-                        var curve = damage * Math.Pow(growthRate, (double)damage);
-                        obj.Damage = (int?)curve;
-                        obj.WeaponBaseDamage = (int?)curve;
-                    }
-                    if (obj.W_WeaponType == WeaponType.Dagger)
-                    {
-                        var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.0035;
-                        var curve = damage * Math.Pow(growthRate, (double)damage);
-                        obj.Damage = (int?)curve;
-                        obj.WeaponBaseDamage = (int?)curve;
-                    }
-                    if (obj.W_WeaponType == WeaponType.Staff)
-                    {
-                        var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.0035;
-                        var curve = damage * Math.Pow(growthRate, (double)damage);
-                        obj.Damage = (int?)curve;
-                        obj.WeaponBaseDamage = (int?)curve;
-                    }
-                    if (obj.W_WeaponType == WeaponType.Bow)
-                    {
-                        var damage = obj.DamageMod + (instanceLevel * 0.0001);
-                        double growthRate = 1.0035;
-                        var curve = damage * Math.Pow(growthRate, (double)damage);
-                        obj.DamageMod = curve;
-                        obj.WeaponBaseDamageMod = curve;
-                    }
-                    if (obj.W_WeaponType == WeaponType.Crossbow)
-                    {
-                        var damage = obj.DamageMod + (instanceLevel * 0.0001);
-                        double growthRate = 1.0035;
-                        var curve = damage * Math.Pow(growthRate, (double)damage);
-                        obj.DamageMod = curve;
-                        obj.WeaponBaseDamageMod = curve;
-                    }
-                    if (obj.W_WeaponType == WeaponType.Thrown)
-                    {
-                        var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.0035;
-                        var curve = damage * Math.Pow(growthRate, (double)damage);
-                        obj.Damage = (int?)curve;
-                        obj.WeaponBaseDamage = (int?)curve;
-                    }
-                    if (obj.W_WeaponType == WeaponType.TwoHanded)
-                    {
-                        var damage = obj.Damage + instanceLevel / 100;
-                        double growthRate = 1.0035;
-                        var curve = damage * Math.Pow(growthRate, (double)damage);
-                        obj.Damage = (int?)curve;
-                        obj.WeaponBaseDamage = (int?)curve;
-                    }
-                    if (obj.IsCaster)
-                    {
-                        if (obj.ElementalDamageMod != null)
+                        if (obj.W_WeaponType == WeaponType.Unarmed)
                         {
-                            var damage = obj.ElementalDamageMod + (instanceLevel * 0.00015);
-                            double growthRate = 1.0035;
-                            var curve = damage * Math.Pow(growthRate, (double)damage);
-                            obj.ElementalDamageMod = curve;
-                            obj.WeaponBaseDamageMod = curve;
+                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            obj.Damage = newDamage;
+                            obj.WeaponBaseDamage = newDamage;
                         }
-                    }
-
-                    if (obj.ItemType == ItemType.MeleeWeapon)
-                    {
-                        var maxlevel = 100;
-                        var basexp = 1000000000;
-
-                        obj.ItemMaxLevel = maxlevel;
-                        obj.SetProperty(PropertyInt.ItemXpStyle, 1);
-                        obj.ItemBaseXp = basexp;
-                        obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
-                    }
-
-                    if (obj.ItemType == ItemType.MissileWeapon)
-                    {
-                        var maxlevel = 100;
-                        var basexp = 1000000000;
-
-                        obj.ItemMaxLevel = maxlevel;
-                        obj.SetProperty(PropertyInt.ItemXpStyle, 1);
-                        obj.ItemBaseXp = basexp;
-                        obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
-                    }
-
-                    if (obj.ItemType == ItemType.Caster)
-                    {
-                        var maxlevel = 100;
-                        var basexp = 1000000000;
-
-                        obj.ItemMaxLevel = maxlevel;
-                        obj.SetProperty(PropertyInt.ItemXpStyle, 1);
-                        obj.ItemBaseXp = basexp;
-                        obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
-                    }
-
-                    // Wearables
-
-                    double gearGrowthRate = 1.35;
-                    var gearRating = (int)Math.Round(1 * Math.Pow(gearGrowthRate, instanceLevel * 0.0015) + ThreadSafeRandom.Next(1, 3));
-
-                    if (obj.ItemType == ItemType.Clothing || obj.ItemType == ItemType.Armor)
-                    {
-                        if (obj.ArmorLevel != null)
+                        if (obj.W_WeaponType == WeaponType.Sword)
                         {
-                            if (obj.ArmorLevel > 0)
+                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            obj.Damage = newDamage;
+                            obj.WeaponBaseDamage = newDamage;
+                        }
+                        if (obj.W_WeaponType == WeaponType.Axe)
+                        {
+                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            obj.Damage = newDamage;
+                            obj.WeaponBaseDamage = newDamage;
+                        }
+                        if (obj.W_WeaponType == WeaponType.Mace)
+                        {
+                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            obj.Damage = newDamage;
+                            obj.WeaponBaseDamage = newDamage;
+                        }
+                        if (obj.W_WeaponType == WeaponType.Spear)
+                        {
+                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            obj.Damage = newDamage;
+                            obj.WeaponBaseDamage = newDamage;
+                        }
+                        if (obj.W_WeaponType == WeaponType.Dagger)
+                        {
+                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            obj.Damage = newDamage;
+                            obj.WeaponBaseDamage = newDamage;
+                        }
+                        if (obj.W_WeaponType == WeaponType.Staff)
+                        {
+                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            obj.Damage = newDamage;
+                            obj.WeaponBaseDamage = newDamage;
+                        }
+                        if (obj.W_WeaponType == WeaponType.TwoHanded)
+                        {
+                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            obj.Damage = newDamage;
+                            obj.WeaponBaseDamage = newDamage;
+                        }
+                        if (obj.W_WeaponType == WeaponType.Thrown)
+                        {
+                            var newDamage = obj.DamageMod + highestPlayerLevel / 10000.0;
+                            obj.DamageMod = newDamage;
+                            obj.WeaponBaseDamageMod = newDamage;
+                        }
+                        if (obj.W_WeaponType == WeaponType.Bow)
+                        {
+                            var newDamage = obj.DamageMod + highestPlayerLevel / 10000.0;
+                            obj.DamageMod = newDamage;
+                            obj.WeaponBaseDamageMod = newDamage;
+                        }
+                        if (obj.W_WeaponType == WeaponType.Crossbow)
+                        {
+                            var newDamage = obj.DamageMod + highestPlayerLevel / 10000.0;
+                            obj.DamageMod = newDamage;
+                            obj.WeaponBaseDamageMod = newDamage;
+                        }
+                        if (obj.IsCaster)
+                        {
+                            if (obj.ElementalDamageMod != null)
                             {
-                                if (obj.Name.Contains("Covenant"))
+                                var newDamage = highestPlayerLevel / 20000.0;
+                                obj.ElementalDamageMod = obj.ElementalDamageMod + newDamage;
+                                obj.WeaponBaseDamageMod = obj.ElementalDamageMod + newDamage;
+                            }
+                        }
+
+                        if (obj.ItemType == ItemType.MeleeWeapon || obj.WeaponSkill == Skill.HeavyWeapons || obj.WeaponSkill == Skill.LightWeapons || obj.WeaponSkill == Skill.FinesseWeapons)
+                        {
+                            var maxlevel = 100;
+                            var basexp = (long)(1000000000 * Math.Pow(1.001, highestPlayerLevel - 275));
+                            var newName = obj.Name + $" ({highestPlayerLevel})";
+
+                            obj.Name = newName;
+                            obj.SetProperty(PropertyString.Name, newName);
+
+                            var gunbladeRoll = ThreadSafeRandom.Next(0.00f, 1.00f);
+
+                            if (gunbladeRoll <= 0.25f)
+                            {
+                                var newGBName = obj.Name + $" (GB)";
+                                obj.IsGunblade = true;
+                                obj.SetProperty(PropertyBool.IsGunblade, true);
+                                obj.Name = newGBName;
+                                obj.SetProperty(PropertyString.Name, newGBName);
+                            }
+                            
+                            obj.ItemMaxLevel = maxlevel;
+                            obj.SetProperty(PropertyInt.ItemXpStyle, 1);
+                            obj.ItemBaseXp = basexp;
+                            obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
+                            obj.WieldRequirements2 = WieldRequirement.Level;
+                            obj.SetProperty(PropertyInt.WieldRequirements2, 7);
+                            obj.WieldDifficulty2 = highestPlayerLevel;
+                            obj.SetProperty(PropertyInt.WieldDifficulty2, highestPlayerLevel);
+                        }
+
+                        if (obj.ItemType == ItemType.MissileWeapon || obj.WeaponSkill == Skill.MissileWeapons)
+                        {
+                            var maxlevel = 100;
+                            var basexp = (long)(1000000000 * Math.Pow(1.001, highestPlayerLevel - 275));
+                            var newName = obj.Name + $" ({highestPlayerLevel})";
+
+                            obj.Name = newName;
+                            obj.SetProperty(PropertyString.Name, newName);
+                            obj.ItemMaxLevel = maxlevel;
+                            obj.SetProperty(PropertyInt.ItemXpStyle, 1);
+                            obj.ItemBaseXp = basexp;
+                            obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
+                            obj.WieldRequirements2 = WieldRequirement.Level;
+                            obj.SetProperty(PropertyInt.WieldRequirements2, 7);
+                            obj.WieldDifficulty2 = highestPlayerLevel;
+                            obj.SetProperty(PropertyInt.WieldDifficulty2, highestPlayerLevel);
+                        }
+
+                        if (obj.ItemType == ItemType.MissileWeapon || obj.WeaponSkill == Skill.MissileWeapons)
+                        {
+                            var maxlevel = 100;
+                            var basexp = (long)(1000000000 * Math.Pow(1.001, highestPlayerLevel - 275));
+                            var newName = obj.Name + $" ({highestPlayerLevel})";
+
+                            obj.Name = newName;
+                            obj.SetProperty(PropertyString.Name, newName);
+                            obj.ItemMaxLevel = maxlevel;
+                            obj.SetProperty(PropertyInt.ItemXpStyle, 1);
+                            obj.ItemBaseXp = basexp;
+                            obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
+                            obj.WieldRequirements2 = WieldRequirement.Level;
+                            obj.SetProperty(PropertyInt.WieldRequirements2, 7);
+                            obj.WieldDifficulty2 = highestPlayerLevel;
+                            obj.SetProperty(PropertyInt.WieldDifficulty2, highestPlayerLevel);
+                        }
+
+                        if (obj.ItemType == ItemType.Caster || obj.WeaponSkill == Skill.WarMagic || obj.WeaponSkill == Skill.VoidMagic)
+                        {
+                            var maxlevel = 100;
+                            var basexp = (long)(1000000000 * Math.Pow(1.001, highestPlayerLevel - 275));
+                            var newName = obj.Name + $" ({highestPlayerLevel})";
+
+                            obj.Name = newName;
+                            obj.SetProperty(PropertyString.Name, newName);
+                            obj.ItemMaxLevel = maxlevel;
+                            obj.SetProperty(PropertyInt.ItemXpStyle, 1);
+                            obj.ItemBaseXp = basexp;
+                            obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
+                            obj.WieldRequirements2 = WieldRequirement.Level;
+                            obj.SetProperty(PropertyInt.WieldRequirements2, 7);
+                            obj.WieldDifficulty2 = highestPlayerLevel;
+                            obj.SetProperty(PropertyInt.WieldDifficulty2, highestPlayerLevel);
+                        }
+
+                        // Wearables
+
+                        var gearRating = (highestPlayerLevel / 100) + ThreadSafeRandom.Next(-1, 2);
+
+                        if (obj.ItemType == ItemType.Clothing || obj.ItemType == ItemType.Armor)
+                        {
+                            var newName = obj.Name + $" ({highestPlayerLevel})";
+
+                            obj.Name = newName;
+                            obj.SetProperty(PropertyString.Name, newName);
+
+                            if (obj.ArmorLevel != null)
+                            {
+                                if (obj.ArmorLevel > 0)
                                 {
-                                    obj.ArmorLevel = obj.ArmorLevel - 80;
-                                }
-                                var armorLevel = obj.ArmorLevel + instanceLevel / 100;
-                                double growthRate = 1.007;
-                                var curve = armorLevel * Math.Pow(growthRate, (double)armorLevel);
-                                obj.ArmorLevel = (int?)curve;
-                                obj.BaseArmorLevel = obj.ArmorLevel;
-                                if (instanceLevel >= 220) //Ratings
-                                {
-                                    var rng = ThreadSafeRandom.Next(0, 1);
+                                    var newArmorLevel = obj.ArmorLevel + ((highestPlayerLevel / 100) * 4);
+
+                                    obj.ArmorLevel = newArmorLevel;
+                                    obj.BaseArmorLevel = obj.ArmorLevel;
+
+                                    var rng = ThreadSafeRandom.Next(0, 3);
 
                                     if (rng == 0)
                                         obj.GearCritDamage = gearRating;
-                                    else
+                                    else if (rng == 1)
                                         obj.GearCritDamageResist = gearRating;
-                                }
-                                var maxlevel = 100;
-                                var basexp = 1000000000;
+                                    else if (rng == 2)
+                                        obj.GearDamage = gearRating;
+                                    else
+                                        obj.GearDamageResist = gearRating;
 
-                                obj.ItemMaxLevel = maxlevel;
-                                obj.SetProperty(PropertyInt.ItemXpStyle, 1);
-                                obj.ItemBaseXp = basexp;
-                                obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
-                            }
-                            else
-                            {
-                                if (instanceLevel >= 220) //Ratings
+                                    var maxlevel = 100;
+                                    var basexp = (long)(1000000000 * Math.Pow(1.001, highestPlayerLevel - 275));
+
+                                    obj.ItemMaxLevel = maxlevel;
+                                    obj.SetProperty(PropertyInt.ItemXpStyle, 1);
+                                    obj.ItemBaseXp = basexp;
+                                    obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
+                                }
+                                else
                                 {
                                     var rng = ThreadSafeRandom.Next(0, 1);
 
@@ -354,44 +378,55 @@ namespace ACE.Server.Factories
                                     else
                                         obj.GearDamageResist = gearRating;
                                 }
-                            }
-                        }
-                    }
-                    if (obj.IsShield)
-                    {
-                        if (obj.ArmorLevel != null)
-                        {
-                            if (obj.ArmorLevel > 0)
-                            {
-                                var armorLevel = obj.ArmorLevel + instanceLevel / 100;
-                                double growthRate = 1.0008;
-                                var curve = armorLevel * Math.Pow(growthRate, (double)armorLevel);
-                                obj.ArmorLevel = (int?)curve;
-                            }
-                            var maxlevel = 100;
-                            var basexp = 1000000000;
 
-                            obj.ItemMaxLevel = maxlevel;
-                            obj.SetProperty(PropertyInt.ItemXpStyle, 1);
-                            obj.ItemBaseXp = basexp;
-                            obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
+                                obj.WieldDifficulty = 7;
+                                obj.WieldDifficulty = highestPlayerLevel;
+                            }
                         }
-                    }
-                    if (obj.ItemType == ItemType.Jewelry)
-                    {
-                        if (instanceLevel >= 220) //Ratings
+                        if (obj.IsShield)
                         {
+                            var newName = obj.Name + $" ({highestPlayerLevel})";
+
+                            obj.Name = newName;
+                            obj.SetProperty(PropertyString.Name, newName);
+
+                            if (obj.ArmorLevel != null)
+                            {
+                                if (obj.ArmorLevel > 0)
+                                {
+                                    var armorLevel = obj.ArmorLevel + ((highestPlayerLevel / 100) * 4);
+                                    var curve = armorLevel;
+                                    obj.ArmorLevel = curve;
+                                }
+                                var maxlevel = 100;
+                                var basexp = (long)(1000000000 * Math.Pow(1.001, highestPlayerLevel - 275));
+
+                                obj.ItemMaxLevel = maxlevel;
+                                obj.SetProperty(PropertyInt.ItemXpStyle, 1);
+                                obj.ItemBaseXp = basexp;
+                                obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
+                            }
+
+                            obj.WieldDifficulty = highestPlayerLevel;
+                        }
+
+                        if (obj.ItemType == ItemType.Jewelry)
+                        {
+                            var newName = obj.Name + $" ({highestPlayerLevel})";
+
+                            obj.Name = newName;
+                            obj.SetProperty(PropertyString.Name, newName);
+
                             var rng = ThreadSafeRandom.Next(0, 1);
 
                             if (rng == 0)
                                 obj.GearHealingBoost = gearRating;
                             else
                                 obj.GearMaxHealth = gearRating;
+
+                            obj.WieldDifficulty = highestPlayerLevel;
                         }
-                    }
-                    if (obj.ItemType == ItemType.Clothing && obj.GetProperty(PropertyInt.ValidLocations) == 0x8000000) //Cloaks
-                    {
-                        if (instanceLevel >= 220) //Ratings
+                        if (obj.ItemType == ItemType.Clothing && obj.GetProperty(PropertyInt.ValidLocations) == 0x8000000) //Cloaks
                         {
                             var rng = ThreadSafeRandom.Next(0, 1);
 
@@ -399,6 +434,8 @@ namespace ACE.Server.Factories
                                 obj.GearDamage = gearRating;
                             else
                                 obj.GearDamageResist = gearRating;
+
+                            obj.WieldDifficulty = highestPlayerLevel;
                         }
                     }
                 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using ACE.Common;
@@ -180,6 +181,52 @@ namespace ACE.Server.WorldObjects
             //Console.WriteLine($"EffectiveMagicDefense: {effectiveMagicDefense}");
 
             return effectiveMagicDefense;
+        }
+
+        public static readonly float MagicAoeRange = 7.0f;
+
+        public Dictionary<Creature, float> GetMagicAOETarget(Player player, Creature target, WorldObject weapon, float range)
+        {
+            //if (!weapon.IsCleaving) return null;
+            var objectVar = this;
+
+            // sort visible objects by ascending distance
+            var visible = PhysicsObj.ObjMaint.GetVisibleObjectsValuesWhere(o => o.WeenieObj.WorldObject != null);
+            visible.Sort(DistanceComparator);
+
+            Dictionary<Creature, float> distanceMap = new Dictionary<Creature, float>();
+            var cleaveTargets = new List<Creature>();
+
+            foreach (var obj in visible)
+            {
+                // cleaving skips original target
+                if (obj.ID == target.PhysicsObj.ID)
+                    continue;
+
+                // only cleave creatures
+                var creature = obj.WeenieObj.WorldObject as Creature;
+
+                if (creature == null || creature.Teleporting || creature.IsDead) continue;
+
+                if (player != null && player.CheckPKStatusVsTarget(creature, null) != null)
+                    continue;
+
+                if (!creature.Attackable && creature.TargetingTactic == TargetingTactic.None || creature.Teleporting)
+                    continue;
+
+                if (creature is CombatPet && (player != null || this is CombatPet))
+                    continue;
+
+                float distance = target.GetCylinderDistance(creature);
+
+                if (distance < MagicAoeRange)
+                    distanceMap.Add(creature, distance);
+            }
+
+            distanceMap.OrderBy(pair => pair.Value).Select(pair => pair.Key);
+            cleaveTargets = distanceMap.OrderBy(pair => pair.Value).Select(pair => pair.Key).ToList();
+
+            return distanceMap;
         }
     }
 }

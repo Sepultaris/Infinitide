@@ -135,6 +135,13 @@ namespace ACE.Server.WorldObjects
 
             if (damageEvent.HasDamage)
             {
+                // Gunblade projectile damage
+                if (damageSource != null)
+                {
+                    if (damageSource.WeenieClassId == 300444)
+                        damageEvent.Damage = damageEvent.Damage / 3.0f;
+                }
+
                 OnDamageTarget(target, damageEvent.CombatType, damageEvent.IsCritical);
 
                 if (targetPlayer != null)

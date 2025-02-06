@@ -137,7 +137,7 @@ namespace ACE.Server.InfinitideMods
         public long GetXPForLevel(int level)
         {
             long xp = (long)(4000000000 * Math.Pow(1.001, level - 275));
-            return Math.Min(100000000000, xp);
+            return xp;
         }
     }
 }

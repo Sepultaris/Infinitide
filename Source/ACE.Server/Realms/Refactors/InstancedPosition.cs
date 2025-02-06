@@ -91,9 +91,24 @@ namespace ACE.Server.Realms
             return (int)Math.Round((decimal)instanceLevel);
         }
 
+        public int GetHighestPlayerLevelInInstance(LandblockId landblockId)
+        {
+            var lb = LandblockManager.GetLandblockUnsafe(landblockId, Instance); //Get current instanced landblock
+            var players = lb.GetAllCreatures().Where(x => x is Player);
+
+            if (players.Count() > 0)
+            {
+                var level = players.Max(x => x.Level);
+
+                return (int)level;
+            }
+            else
+                return 0;
+        }
+
         public long CalculateScaledXp(long m_amount, int instanceLevel)
         {
-            return (long)(m_amount * 6.3) + (long)(m_amount * Math.Pow(1.00035, instanceLevel - 275));
+            return (long)(m_amount + m_amount * 1.5 * Math.Pow(1.001, Math.Max(instanceLevel - 275, 0)));
         }
 
         public static uint InstanceIDFromVars(ushort realmId, ushort shortInstanceId, bool isTemporaryRuleset)

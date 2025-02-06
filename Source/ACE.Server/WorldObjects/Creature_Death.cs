@@ -16,6 +16,7 @@ using ACE.Server.Network.GameEvent.Events;
 using ACE.Server.Network.GameMessages.Messages;
 using ACE.Server.WorldObjects.Entity;
 using ACE.Server.Realms;
+using ACE.Common;
 
 namespace ACE.Server.WorldObjects
 {
@@ -787,24 +788,81 @@ namespace ACE.Server.WorldObjects
         private List<WorldObject> GenerateTreasure(DamageHistoryInfo killer, Corpse corpse)
         {
             var droppedItems = new List<WorldObject>();
+            var currentLandblock = CurrentLandblock;
+            var highestPlayerLevel = Location.GetHighestPlayerLevelInInstance(currentLandblock.Id);
 
             // create death treasure from loot generation factory
             if (DeathTreasure != null)
             {
-                List<WorldObject> items = RealmRuleset.LootGenerationFactory.CreateRandomLootObjects(DeathTreasure);
-                foreach (WorldObject wo in items)
+                if (highestPlayerLevel >= 275)
                 {
-                    if (corpse != null)
-                        corpse.TryAddToInventory(wo);
-                    else
-                        droppedItems.Add(wo);
+                    DeathTreasure.Id = 300391;
+                    DeathTreasure.TreasureType = 3111;
+                    DeathTreasure.Tier = 8;
+                    DeathTreasure.LootQualityMod = 3;
 
-                    DoCantripLogging(killer, wo);
+                    List<WorldObject> items = RealmRuleset.LootGenerationFactory.CreateRandomLootObjects(DeathTreasure);
+
+                    if (items.Count > 0)
+                    {
+                        LootGenerationFactory.ScaleInstanceLoot(CurrentLandblock, Location, items);
+                    }
+
+                    foreach (WorldObject wo in items)
+                    {
+                        if (corpse != null)
+                            corpse.TryAddToInventory(wo);
+                        else
+                            droppedItems.Add(wo);
+
+                        DoCantripLogging(killer, wo);
+                    }
+
+                    List<WorldObject> extraItems = RealmRuleset.LootGenerationFactory.CreateRandomLootObjects(DeathTreasure);
+
+                    if (extraItems.Count > 0)
+                    {
+                        LootGenerationFactory.ScaleInstanceLoot(CurrentLandblock, Location, extraItems);
+
+                        var ammoRoll = ThreadSafeRandom.Next(0.00f, 1.00f);
+
+                        if (ammoRoll <= 0.25f)
+                        {
+                            var ammo = WorldObjectFactory.CreateNewWorldObject(300444);
+
+                            if (ammo != null)
+                            {
+                                var damageRoll = ThreadSafeRandom.Next(-3, 2);
+                                var newAmmoDamage = ammo.Damage + (highestPlayerLevel / 100) + damageRoll;
+
+                                ammo.Damage = newAmmoDamage;
+                                extraItems.Add(ammo);
+                            }
+                        }
+                    }
+
+                    foreach (WorldObject wo in extraItems)
+                    {
+                        if (corpse != null)
+                            corpse.TryAddToInventory(wo);
+                        else
+                            droppedItems.Add(wo);
+
+                        DoCantripLogging(killer, wo);
+                    }
                 }
-
-                if (items.Count > 0)
+                else
                 {
-                    LootGenerationFactory.ScaleInstanceLoot(CurrentLandblock, Location, items);
+                    List<WorldObject> items = RealmRuleset.LootGenerationFactory.CreateRandomLootObjects(DeathTreasure);
+                    foreach (WorldObject wo in items)
+                    {
+                        if (corpse != null)
+                            corpse.TryAddToInventory(wo);
+                        else
+                            droppedItems.Add(wo);
+
+                        DoCantripLogging(killer, wo);
+                    }
                 }
             }
 
