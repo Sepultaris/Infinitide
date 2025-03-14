@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
@@ -497,6 +498,62 @@ namespace ACE.Server.WorldObjects
             //Console.WriteLine($"Z Angle: {aimLevel.GetAimAngle()}");
 
             return aimLevel;
+        }
+
+        public static readonly float PunchThroughRange = 7.0f;
+        public static readonly float PunchThroughRangeSq = PunchThroughRange * PunchThroughRange;
+        public static readonly float PunchThroughAngle = 10.0f;
+
+        public static readonly float PunchThroughCylRange = 7.0f;
+
+        public List<Creature> GetPunchThroughTargets(Creature target, WorldObject weapon)
+        {
+            var player = this as Player;
+
+            //if (!weapon.IsCleaving) return null;
+
+            // sort visible objects by ascending distance
+            var visible = PhysicsObj.ObjMaint.GetVisibleObjectsValuesWhere(o => o.WeenieObj.WorldObject != null);
+            visible.Sort(DistanceComparator);
+
+            var punchThroughTargets = new List<Creature>();
+            //var totalTargets = weapon.CleaveTargets;
+
+            foreach (var obj in visible)
+            {
+                // cleaving skips original target
+                if (obj.ID == target.PhysicsObj.ID)
+                    continue;
+
+                // only cleave creatures
+                var creature = obj.WeenieObj.WorldObject as Creature;
+                if (creature == null || creature.Teleporting || creature.IsDead) continue;
+
+                if (player != null && player.CheckPKStatusVsTarget(creature, null) != null)
+                    continue;
+
+                if (!creature.Attackable && creature.TargetingTactic == TargetingTactic.None || creature.Teleporting)
+                    continue;
+
+                if (creature is CombatPet && (player != null || this is CombatPet))
+                    continue;
+
+                // no objects in cleave range
+                var cylDist = GetCylinderDistance(creature);
+                if (cylDist > PunchThroughCylRange)
+                    return punchThroughTargets;
+
+                // only cleave in front of attacker
+                var angle = GetAngle(creature);
+                if (Math.Abs(angle) > PunchThroughAngle)
+                    continue;
+
+                // found cleavable object
+                punchThroughTargets.Add(creature);
+                /*if (punchThroughTargets.Count == totalTargets)
+                    break;*/
+            }
+            return punchThroughTargets;
         }
     }
 }

@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using ACE.Common;
 using ACE.Entity.Enum;
 using ACE.Server.Entity;
 using ACE.Server.Entity.Actions;
 using ACE.Server.Managers;
 using ACE.Server.Network.GameMessages.Messages;
+using ACE.Server.Physics;
 
 namespace ACE.Server.WorldObjects
 {
@@ -38,17 +40,21 @@ namespace ACE.Server.WorldObjects
             {
                 if (sourcePlayer != null)
                 {
+                    var doubleAttackRoll = DoubleAttackRoll(sourcePlayer.GetCreatureSkill(Skill.MissileWeapons).Current);
+                    var roll = ThreadSafeRandom.Next(0.000f, 1.000f);
+                    var weapon = sourcePlayer.GetEquippedMissileWeapon();
+
                     // player damage monster or player
                     damageEvent = sourcePlayer.DamageTarget(targetCreature, worldObject);
 
-                    if (damageEvent.Weapon.WeaponSkill == Skill.MissileWeapons)
+                    if (damageEvent != null)
                     {
-                        var doubleAttackRoll = DoubleAttackRoll(sourcePlayer.GetCreatureSkill(Skill.MissileWeapons).Current);
-                        var roll = ThreadSafeRandom.Next(0.000f, 1.000f);
-
-                        if (roll < doubleAttackRoll && targetCreature.IsAlive)
+                        if (damageEvent.Weapon.WeaponSkill == Skill.MissileWeapons)
                         {
-                            sourcePlayer.DamageTarget(targetCreature, worldObject);
+                            if (roll < doubleAttackRoll && targetCreature.IsAlive)
+                            {
+                                sourcePlayer.DamageTarget(targetCreature, worldObject);
+                            }
                         }
                     }
 
