@@ -42,9 +42,12 @@ namespace ACE.Server.WorldObjects
                 return;
             }
 
+            var position = Location.AsLocalPosition();
+            bool inSetLandblock = RealmManager.Peripherals.DungeonSets.IncludedInSet(position, "default");
+
             if (CurrentLandblock != null)
             {
-                if (this is Player player && player.CurrentLandblock.HasDungeon)
+                if (this is Player player && inSetLandblock)
                 {
                     if (xpType == XpType.Kill)
                     {
@@ -57,6 +60,9 @@ namespace ACE.Server.WorldObjects
                     }
                 }
             }
+
+            if (Enlightenment >= 1)
+                m_amount = (long)(m_amount + ((m_amount * 0.2f) * Enlightenment));
 
             GrantXP(m_amount, xpType, shareType);
         }

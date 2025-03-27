@@ -486,7 +486,7 @@ namespace ACE.Server.WorldObjects
                         return;
                     }
 
-                    var damageEvent = DamageTarget(creature, weapon);
+                    var damageEvent = DamageTarget(creature, weapon, false);
 
                     // handle target procs
                     if (damageEvent != null && damageEvent.HasDamage && !targetProc)
@@ -502,7 +502,7 @@ namespace ACE.Server.WorldObjects
                         foreach (var cleaveHit in cleave)
                         {
                             // target procs don't happen for cleaving
-                            DamageTarget(cleaveHit, weapon);
+                            DamageTarget(cleaveHit, weapon, false);
                         }
                     }
 
@@ -514,7 +514,7 @@ namespace ACE.Server.WorldObjects
 
                         foreach (var cleaveHit in cleave)
                         {
-                            DamageTarget(cleaveHit, weapon);
+                            DamageTarget(cleaveHit, weapon, false);
                         }
                     }
 
@@ -702,7 +702,7 @@ namespace ACE.Server.WorldObjects
                         foreach (var cleaveHit in cleave)
                         {
                             // target procs don't happen for cleaving
-                            DamageTarget(cleaveHit, weapon);
+                            DamageTarget(cleaveHit, weapon, false);
                             if (ammo != null)
                             {
                                 LaunchProjectile(weapon, ammo, cleaveHit, origin, orientation, velocity);

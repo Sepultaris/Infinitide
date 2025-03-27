@@ -257,12 +257,6 @@ namespace ACE.Server.WorldObjects
         /// </summary>
         public override void MoveTo(WorldObject target, float runRate = 1.0f)
         {
-            if (!IsPassivePet)
-            {
-                base.MoveTo(target, runRate);
-                return;
-            }
-
             if (MoveSpeed == 0.0f)
                 GetMovementSpeed();
 

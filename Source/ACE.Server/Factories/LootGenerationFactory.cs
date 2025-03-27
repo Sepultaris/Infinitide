@@ -19,7 +19,6 @@ using ACE.Server.Managers;
 using ACE.Server.Realms;
 using ACE.Server.WorldObjects;
 using log4net;
-using log4net.Core;
 using WeenieClassName = ACE.Server.Factories.Enum.WeenieClassName;
 
 namespace ACE.Server.Factories
@@ -160,9 +159,9 @@ namespace ACE.Server.Factories
 
         public static List<WorldObject> ScaleInstanceLoot(Landblock landblock,InstancedPosition landblockInstance, List<WorldObject> loot)
         {
-            var highestPlayerLevel = landblockInstance.GetHighestPlayerLevelInInstance(landblock.Id);
+            var instanceLevel = landblockInstance.GetHighestPlayerLevelInInstance(landblock.Id);
 
-            if (highestPlayerLevel >= 275)
+            if (instanceLevel >= 275)
             {
                 if (loot.Count > 0)
                 {
@@ -172,67 +171,67 @@ namespace ACE.Server.Factories
 
                         if (obj.W_WeaponType == WeaponType.Unarmed)
                         {
-                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Sword)
                         {
-                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Axe)
                         {
-                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Mace)
                         {
-                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Spear)
                         {
-                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Dagger)
                         {
-                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Staff)
                         {
-                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.TwoHanded)
                         {
-                            var newDamage = obj.Damage + ((highestPlayerLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Thrown)
                         {
-                            var newDamage = obj.DamageMod + highestPlayerLevel / 10000.0;
+                            var newDamage = obj.DamageMod + instanceLevel / 10000.0;
                             obj.DamageMod = newDamage;
                             obj.WeaponBaseDamageMod = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Bow)
                         {
-                            var newDamage = obj.DamageMod + highestPlayerLevel / 10000.0;
+                            var newDamage = obj.DamageMod + instanceLevel / 10000.0;
                             obj.DamageMod = newDamage;
                             obj.WeaponBaseDamageMod = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Crossbow)
                         {
-                            var newDamage = obj.DamageMod + highestPlayerLevel / 10000.0;
+                            var newDamage = obj.DamageMod + instanceLevel / 10000.0;
                             obj.DamageMod = newDamage;
                             obj.WeaponBaseDamageMod = newDamage;
                         }
@@ -240,7 +239,7 @@ namespace ACE.Server.Factories
                         {
                             if (obj.ElementalDamageMod != null)
                             {
-                                var newDamage = highestPlayerLevel / 20000.0;
+                                var newDamage = instanceLevel / 20000.0;
                                 obj.ElementalDamageMod = obj.ElementalDamageMod + newDamage;
                                 obj.WeaponBaseDamageMod = obj.ElementalDamageMod + newDamage;
                             }
@@ -249,8 +248,8 @@ namespace ACE.Server.Factories
                         if (obj.ItemType == ItemType.MeleeWeapon || obj.WeaponSkill == Skill.HeavyWeapons || obj.WeaponSkill == Skill.LightWeapons || obj.WeaponSkill == Skill.FinesseWeapons)
                         {
                             var maxlevel = 100;
-                            var basexp = (long)(1000000000 * Math.Pow(1.001, highestPlayerLevel - 275));
-                            var newName = obj.Name + $" ({highestPlayerLevel})";
+                            var basexp = (long)(1000000000 * Math.Pow(1.001, instanceLevel - 275) / 3);
+                            var newName = obj.Name + $" ({instanceLevel})";
 
                             obj.Name = newName;
                             obj.SetProperty(PropertyString.Name, newName);
@@ -272,15 +271,15 @@ namespace ACE.Server.Factories
                             obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
                             obj.WieldRequirements2 = WieldRequirement.Level;
                             obj.SetProperty(PropertyInt.WieldRequirements2, 7);
-                            obj.WieldDifficulty2 = highestPlayerLevel;
-                            obj.SetProperty(PropertyInt.WieldDifficulty2, highestPlayerLevel);
+                            obj.WieldDifficulty2 = instanceLevel;
+                            obj.SetProperty(PropertyInt.WieldDifficulty2, instanceLevel);
                         }
 
                         if (obj.ItemType == ItemType.MissileWeapon || obj.WeaponSkill == Skill.MissileWeapons)
                         {
                             var maxlevel = 100;
-                            var basexp = (long)(1000000000 * Math.Pow(1.001, highestPlayerLevel - 275));
-                            var newName = obj.Name + $" ({highestPlayerLevel})";
+                            var basexp = (long)(1000000000 * Math.Pow(1.001, instanceLevel - 275) / 3);
+                            var newName = obj.Name + $" ({instanceLevel})";
 
                             obj.Name = newName;
                             obj.SetProperty(PropertyString.Name, newName);
@@ -290,33 +289,15 @@ namespace ACE.Server.Factories
                             obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
                             obj.WieldRequirements2 = WieldRequirement.Level;
                             obj.SetProperty(PropertyInt.WieldRequirements2, 7);
-                            obj.WieldDifficulty2 = highestPlayerLevel;
-                            obj.SetProperty(PropertyInt.WieldDifficulty2, highestPlayerLevel);
-                        }
-
-                        if (obj.ItemType == ItemType.MissileWeapon || obj.WeaponSkill == Skill.MissileWeapons)
-                        {
-                            var maxlevel = 100;
-                            var basexp = (long)(1000000000 * Math.Pow(1.001, highestPlayerLevel - 275));
-                            var newName = obj.Name + $" ({highestPlayerLevel})";
-
-                            obj.Name = newName;
-                            obj.SetProperty(PropertyString.Name, newName);
-                            obj.ItemMaxLevel = maxlevel;
-                            obj.SetProperty(PropertyInt.ItemXpStyle, 1);
-                            obj.ItemBaseXp = basexp;
-                            obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
-                            obj.WieldRequirements2 = WieldRequirement.Level;
-                            obj.SetProperty(PropertyInt.WieldRequirements2, 7);
-                            obj.WieldDifficulty2 = highestPlayerLevel;
-                            obj.SetProperty(PropertyInt.WieldDifficulty2, highestPlayerLevel);
+                            obj.WieldDifficulty2 = instanceLevel;
+                            obj.SetProperty(PropertyInt.WieldDifficulty2, instanceLevel);
                         }
 
                         if (obj.ItemType == ItemType.Caster || obj.WeaponSkill == Skill.WarMagic || obj.WeaponSkill == Skill.VoidMagic)
                         {
                             var maxlevel = 100;
-                            var basexp = (long)(1000000000 * Math.Pow(1.001, highestPlayerLevel - 275));
-                            var newName = obj.Name + $" ({highestPlayerLevel})";
+                            var basexp = (long)(1000000000 * Math.Pow(1.001, instanceLevel - 275) / 3);
+                            var newName = obj.Name + $" ({instanceLevel})";
 
                             obj.Name = newName;
                             obj.SetProperty(PropertyString.Name, newName);
@@ -326,17 +307,34 @@ namespace ACE.Server.Factories
                             obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
                             obj.WieldRequirements2 = WieldRequirement.Level;
                             obj.SetProperty(PropertyInt.WieldRequirements2, 7);
-                            obj.WieldDifficulty2 = highestPlayerLevel;
-                            obj.SetProperty(PropertyInt.WieldDifficulty2, highestPlayerLevel);
+                            obj.WieldDifficulty2 = instanceLevel;
+                            obj.SetProperty(PropertyInt.WieldDifficulty2, instanceLevel);
                         }
 
                         // Wearables
 
-                        var gearRating = (highestPlayerLevel / 100) + ThreadSafeRandom.Next(-1, 2);
+                        var gearRating1 = (instanceLevel / 100) + ThreadSafeRandom.Next(-2, 5);
+                        var gearRating2 = (instanceLevel / 100) + ThreadSafeRandom.Next(-2, 5);
+
+                        if (instanceLevel >= 1000 && instanceLevel <= 9999)
+                        {
+                            gearRating1 = (instanceLevel / 100) + ThreadSafeRandom.Next(-5, 15);
+                            gearRating2 = (instanceLevel / 100) + ThreadSafeRandom.Next(-5, 15);
+                        }
+                        else if (instanceLevel >= 10000 && instanceLevel <= 99999)
+                        {
+                            gearRating1 = (instanceLevel / 100) + ThreadSafeRandom.Next(-15, 35);
+                            gearRating2 = (instanceLevel / 100) + ThreadSafeRandom.Next(-15, 35);
+                        }
+                        else if (instanceLevel >= 100000)
+                        {
+                            gearRating1 = (instanceLevel / 100) + ThreadSafeRandom.Next(-50, 200);
+                            gearRating2 = (instanceLevel / 100) + ThreadSafeRandom.Next(-50, 200);
+                        }
 
                         if (obj.ItemType == ItemType.Clothing || obj.ItemType == ItemType.Armor)
                         {
-                            var newName = obj.Name + $" ({highestPlayerLevel})";
+                            var newName = obj.Name + $" ({instanceLevel})";
 
                             obj.Name = newName;
                             obj.SetProperty(PropertyString.Name, newName);
@@ -345,24 +343,16 @@ namespace ACE.Server.Factories
                             {
                                 if (obj.ArmorLevel > 0)
                                 {
-                                    var newArmorLevel = obj.ArmorLevel + ((highestPlayerLevel / 100) * 4);
+                                    var newArmorLevel = obj.ArmorLevel + ((instanceLevel / 100) * 4);
 
                                     obj.ArmorLevel = newArmorLevel;
                                     obj.BaseArmorLevel = obj.ArmorLevel;
 
-                                    var rng = ThreadSafeRandom.Next(0, 3);
-
-                                    if (rng == 0)
-                                        obj.GearCritDamage = gearRating;
-                                    else if (rng == 1)
-                                        obj.GearCritDamageResist = gearRating;
-                                    else if (rng == 2)
-                                        obj.GearDamage = gearRating;
-                                    else
-                                        obj.GearDamageResist = gearRating;
+                                    obj.GearCritDamage = gearRating1;
+                                    obj.GearCritDamageResist = gearRating2;
 
                                     var maxlevel = 100;
-                                    var basexp = (long)(1000000000 * Math.Pow(1.001, highestPlayerLevel - 275));
+                                    var basexp = (long)(1000000000 * Math.Pow(1.001, instanceLevel - 275) / 3);
 
                                     obj.ItemMaxLevel = maxlevel;
                                     obj.SetProperty(PropertyInt.ItemXpStyle, 1);
@@ -373,19 +363,17 @@ namespace ACE.Server.Factories
                                 {
                                     var rng = ThreadSafeRandom.Next(0, 1);
 
-                                    if (rng == 0)
-                                        obj.GearDamage = gearRating;
-                                    else
-                                        obj.GearDamageResist = gearRating;
+                                    obj.GearDamage = gearRating1;
+                                    obj.GearDamageResist = gearRating2;
                                 }
 
                                 obj.WieldDifficulty = 7;
-                                obj.WieldDifficulty = highestPlayerLevel;
+                                obj.WieldDifficulty = instanceLevel;
                             }
                         }
                         if (obj.IsShield)
                         {
-                            var newName = obj.Name + $" ({highestPlayerLevel})";
+                            var newName = obj.Name + $" ({instanceLevel})";
 
                             obj.Name = newName;
                             obj.SetProperty(PropertyString.Name, newName);
@@ -394,12 +382,12 @@ namespace ACE.Server.Factories
                             {
                                 if (obj.ArmorLevel > 0)
                                 {
-                                    var armorLevel = obj.ArmorLevel + ((highestPlayerLevel / 100) * 4);
+                                    var armorLevel = obj.ArmorLevel + ((instanceLevel / 100) * 4);
                                     var curve = armorLevel;
                                     obj.ArmorLevel = curve;
                                 }
                                 var maxlevel = 100;
-                                var basexp = (long)(1000000000 * Math.Pow(1.001, highestPlayerLevel - 275));
+                                var basexp = (long)(1000000000 * Math.Pow(1.001, instanceLevel - 275) / 3);
 
                                 obj.ItemMaxLevel = maxlevel;
                                 obj.SetProperty(PropertyInt.ItemXpStyle, 1);
@@ -407,35 +395,86 @@ namespace ACE.Server.Factories
                                 obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
                             }
 
-                            obj.WieldDifficulty = highestPlayerLevel;
+                            obj.WieldDifficulty = instanceLevel;
                         }
 
                         if (obj.ItemType == ItemType.Jewelry)
                         {
-                            var newName = obj.Name + $" ({highestPlayerLevel})";
+                            var newName = obj.Name + $" ({instanceLevel})";
 
                             obj.Name = newName;
                             obj.SetProperty(PropertyString.Name, newName);
 
                             var rng = ThreadSafeRandom.Next(0, 1);
 
-                            if (rng == 0)
-                                obj.GearHealingBoost = gearRating;
-                            else
-                                obj.GearMaxHealth = gearRating;
+                            obj.GearHealingBoost = gearRating1;
+                            obj.GearMaxHealth = gearRating2;
 
-                            obj.WieldDifficulty = highestPlayerLevel;
+                            obj.WieldDifficulty = instanceLevel;
                         }
                         if (obj.ItemType == ItemType.Clothing && obj.GetProperty(PropertyInt.ValidLocations) == 0x8000000) //Cloaks
                         {
                             var rng = ThreadSafeRandom.Next(0, 1);
 
-                            if (rng == 0)
-                                obj.GearDamage = gearRating;
-                            else
-                                obj.GearDamageResist = gearRating;
+                            obj.GearDamage = gearRating1;
+                            obj.GearDamageResist = gearRating2;
 
-                            obj.WieldDifficulty = highestPlayerLevel;
+                            obj.WieldDifficulty = instanceLevel;
+                        }
+
+                        var petDeviceRating1 = (instanceLevel / 100) + ThreadSafeRandom.Next(-2, 5);
+                        var petDeviceRating2 = (instanceLevel / 100) + ThreadSafeRandom.Next(-2, 5);
+                        var petDeviceRating3 = (instanceLevel / 100) + ThreadSafeRandom.Next(-2, 5);
+                        var petDeviceRating4 = (instanceLevel / 100) + ThreadSafeRandom.Next(-2, 5);
+                        var petDeviceRating5 = (instanceLevel / 100) + ThreadSafeRandom.Next(-2, 5);
+                        var petDeviceRating6 = (instanceLevel / 100) + ThreadSafeRandom.Next(-2, 5);
+                        var petDeviceRating7 = (instanceLevel / 100) + ThreadSafeRandom.Next(-2, 5);
+                        var petDeviceRating8 = (instanceLevel / 100) + ThreadSafeRandom.Next(-2, 5);
+
+                        if (instanceLevel >= 1000 && instanceLevel <= 9999)
+                        {
+                            petDeviceRating1 = (instanceLevel / 100) + ThreadSafeRandom.Next(-5, 15);
+                            petDeviceRating2 = (instanceLevel / 100) + ThreadSafeRandom.Next(-5, 15);
+                            petDeviceRating3 = (instanceLevel / 100) + ThreadSafeRandom.Next(-5, 15);
+                            petDeviceRating4 = (instanceLevel / 100) + ThreadSafeRandom.Next(-5, 15);
+                            petDeviceRating5 = (instanceLevel / 100) + ThreadSafeRandom.Next(-5, 15);
+                            petDeviceRating6 = (instanceLevel / 100) + ThreadSafeRandom.Next(-5, 15);
+                            petDeviceRating7 = (instanceLevel / 100) + ThreadSafeRandom.Next(-5, 15);
+                            petDeviceRating8 = (instanceLevel / 100) + ThreadSafeRandom.Next(-5, 15);
+                        }
+                        else if (instanceLevel >= 10000 && instanceLevel <= 99999)
+                        {
+                            petDeviceRating1 = (instanceLevel / 100) + ThreadSafeRandom.Next(-15, 35);
+                            petDeviceRating2 = (instanceLevel / 100) + ThreadSafeRandom.Next(-15, 35);
+                            petDeviceRating3 = (instanceLevel / 100) + ThreadSafeRandom.Next(-15, 35);
+                            petDeviceRating4 = (instanceLevel / 100) + ThreadSafeRandom.Next(-15, 35);
+                            petDeviceRating5 = (instanceLevel / 100) + ThreadSafeRandom.Next(-15, 35);
+                            petDeviceRating6 = (instanceLevel / 100) + ThreadSafeRandom.Next(-15, 35);
+                            petDeviceRating7 = (instanceLevel / 100) + ThreadSafeRandom.Next(-15, 35);
+                            petDeviceRating8 = (instanceLevel / 100) + ThreadSafeRandom.Next(-15, 35);
+                        }
+                        else if (instanceLevel >= 100000)
+                        {
+                            petDeviceRating1 = (instanceLevel / 100) + ThreadSafeRandom.Next(-50, 200);
+                            petDeviceRating2 = (instanceLevel / 100) + ThreadSafeRandom.Next(-50, 200);
+                            petDeviceRating3 = (instanceLevel / 100) + ThreadSafeRandom.Next(-50, 200);
+                            petDeviceRating4 = (instanceLevel / 100) + ThreadSafeRandom.Next(-50, 200);
+                            petDeviceRating5 = (instanceLevel / 100) + ThreadSafeRandom.Next(-50, 200);
+                            petDeviceRating6 = (instanceLevel / 100) + ThreadSafeRandom.Next(-50, 200);
+                            petDeviceRating7 = (instanceLevel / 100) + ThreadSafeRandom.Next(-50, 200);
+                            petDeviceRating8 = (instanceLevel / 100) + ThreadSafeRandom.Next(-50, 200);
+                        }
+
+                        if (obj is PetDevice)
+                        {
+                            obj.GearCritDamage = petDeviceRating1;
+                            obj.GearCritDamageResist = petDeviceRating2;
+                            obj.GearDamage = petDeviceRating3;
+                            obj.GearDamageResist = petDeviceRating4;
+                            obj.GearDamage = petDeviceRating5;
+                            obj.GearDamageResist = petDeviceRating6;
+                            obj.GearCrit = petDeviceRating7;
+                            obj.GearCritResist = petDeviceRating8;
                         }
                     }
                 }

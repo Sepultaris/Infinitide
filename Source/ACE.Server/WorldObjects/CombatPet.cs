@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using ACE.Entity;
 using ACE.Entity.Enum;
 using ACE.Entity.Models;
+using ACE.Server.Physics.Animation;
+using log4net;
 
 namespace ACE.Server.WorldObjects
 {
@@ -59,7 +61,87 @@ namespace ACE.Server.WorldObjects
             // doing this the easiest way for the code here, and just removing during appraisal
             Faction1Bits = player.Faction1Bits;
 
+            Lifespan = 120;
+
             return true;
+        }
+
+        private double nextSlowTickTime;
+
+        public void CombatPetTick(double currentUnixTime)
+        {
+            NextMonsterTickTime = currentUnixTime + monsterTickInterval;
+
+            var instance = CurrentLandblock.Instance;
+
+            if (IsMoving)
+            {
+                PhysicsObj.update_object(instance);
+
+                UpdatePosition_SyncLocation();
+
+                SendUpdatePosition();
+            }
+
+            if (currentUnixTime >= nextSlowTickTime)
+                CombatPetSlowTick(currentUnixTime);
+        }
+
+        private static readonly double slowTickSeconds = 1.0;
+        private static readonly float MinDistance = 5.0f;
+        private static readonly float MaxDistance = 192.0f;
+
+        public void CombatPetSlowTick(double currentUnixTime)
+        {
+            //Console.WriteLine($"{Name}.HeartbeatStatic({currentUnixTime})");
+            var dist = GetCylinderDistance(P_PetOwner);
+
+            nextSlowTickTime += slowTickSeconds;
+
+            if (P_PetOwner?.PhysicsObj == null)
+            {
+                // log.Error($"{Name} ({Guid}).SlowTick() - P_PetOwner: {P_PetOwner}, P_PetOwner.PhysicsObj: {P_PetOwner?.PhysicsObj}");
+                Destroy();
+                return;
+            }
+
+            if (GetDistance(P_PetOwner) <= 10)
+            {
+                HandleFindTarget();
+                return;
+            }
+
+            if (dist > MaxDistance)
+            {
+                Destroy();
+            }
+
+            if (!IsMoving && dist > MinDistance && FindNextTarget() == false)
+                CombatPetStartFollow();
+        }
+
+        private void CombatPetStartFollow()
+        {
+            // similar to Monster_Navigation.StartTurn()
+
+            //Console.WriteLine($"{Name}.StartFollow()");
+
+            IsMoving = true;
+
+            // broadcast to clients
+            MoveTo(P_PetOwner, RunRate);
+
+            // perform movement on server
+            var mvp = new MovementParameters();
+            mvp.DistanceToObject = MinDistance;
+            mvp.WalkRunThreshold = 0.0f;
+
+            //mvp.UseFinalHeading = true;
+
+            PhysicsObj.MoveToObject(P_PetOwner.PhysicsObj, mvp);
+
+            // prevent snap forward
+            PhysicsObj.UpdateTime = Physics.Common.PhysicsTimer.CurrentTime;
         }
 
         public override void HandleFindTarget()
@@ -73,18 +155,21 @@ namespace ACE.Server.WorldObjects
         public override bool FindNextTarget()
         {
             var nearbyMonsters = GetNearbyMonsters();
+
             if (nearbyMonsters.Count == 0)
             {
-                //Console.WriteLine($"{Name}.FindNextTarget(): empty");
+                CombatPetStartFollow();
                 return false;
+                //Console.WriteLine($"{Name}.FindNextTarget(): empty");                
             }
 
             // get nearest monster
             var nearest = BuildTargetDistance(nearbyMonsters, true);
 
+
             if (nearest[0].Distance > VisualAwarenessRangeSq)
             {
-                //Console.WriteLine($"{Name}.FindNextTarget(): next object out-of-range (dist: {Math.Round(Math.Sqrt(nearest[0].Distance))})");
+                CombatPetStartFollow();
                 return false;
             }
 
@@ -93,6 +178,7 @@ namespace ACE.Server.WorldObjects
             //Console.WriteLine($"{Name}.FindNextTarget(): {AttackTarget.Name}");
 
             return true;
+
         }
 
         /// <summary>

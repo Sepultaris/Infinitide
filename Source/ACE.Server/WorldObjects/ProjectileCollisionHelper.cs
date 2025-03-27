@@ -40,20 +40,40 @@ namespace ACE.Server.WorldObjects
             {
                 if (sourcePlayer != null)
                 {
-                    var doubleAttackRoll = DoubleAttackRoll(sourcePlayer.GetCreatureSkill(Skill.MissileWeapons).Current);
-                    var roll = ThreadSafeRandom.Next(0.000f, 1.000f);
+                    var multiAttack = MultiAttackRoll(sourcePlayer.GetCreatureSkill(Skill.MissileWeapons).Current);
+                    var multiAttackRoll = ThreadSafeRandom.Next(0.000f, 1.000f);
                     var weapon = sourcePlayer.GetEquippedMissileWeapon();
+                    var firstAttackChance = 1.0;
+                    var secondAttackChance = 0.8;
+                    var thirdAttackChance = 0.6;
+                    var fourthAttackChance = 0.4;
+                    var fifthAttackChance = 0.2;
 
                     // player damage monster or player
-                    damageEvent = sourcePlayer.DamageTarget(targetCreature, worldObject);
+                    damageEvent = sourcePlayer.DamageTarget(targetCreature, worldObject, true);
 
                     if (damageEvent != null)
                     {
                         if (damageEvent.Weapon.WeaponSkill == Skill.MissileWeapons)
                         {
-                            if (roll < doubleAttackRoll && targetCreature.IsAlive)
+                            if (multiAttackRoll < multiAttack && targetCreature.IsAlive)
                             {
-                                sourcePlayer.DamageTarget(targetCreature, worldObject);
+                                var roll = ThreadSafeRandom.Next(0.000f, 1.000f);
+
+                                if (roll < firstAttackChance)
+                                    sourcePlayer.DamageTarget(targetCreature, worldObject, false);
+
+                                if (roll < secondAttackChance)
+                                    sourcePlayer.DamageTarget(targetCreature, worldObject, false);
+
+                                if (roll < thirdAttackChance)
+                                    sourcePlayer.DamageTarget(targetCreature, worldObject, false);
+
+                                if (roll < fourthAttackChance)
+                                    sourcePlayer.DamageTarget(targetCreature, worldObject, false);
+
+                                if (roll < fifthAttackChance)
+                                    sourcePlayer.DamageTarget(targetCreature, worldObject, false);
                             }
                         }
                     }
@@ -145,7 +165,7 @@ namespace ACE.Server.WorldObjects
             worldObject.HitMsg = true;
         }
 
-        public static double DoubleAttackRoll(double value)
+        public static double MultiAttackRoll(double value)
         {
             double max = 5000;
             double min = 0;
@@ -155,8 +175,7 @@ namespace ACE.Server.WorldObjects
 
             double normalized = (value - min) / (max - min);
 
-            // Clamp the result between 0.0 and 1.0
-            return Math.Max(0.000, Math.Min(1.000, normalized));
+            return Math.Max(0.150, Math.Min(1.000, normalized));
         }
 
         public static void OnCollideEnvironment(WorldObject worldObject)

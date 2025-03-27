@@ -475,7 +475,27 @@ namespace ACE.Server.Entity
             {
                 // TODO: get randomly generated death treasure from LootGenerationFactory
                 //log.DebugFormat("{0}.TreasureGenerator(): found death treasure {1}", _generator.Name, Biota.WeenieClassId);
-                return Ruleset.LootGenerationFactory.CreateRandomLootObjects(deathTreasure);
+
+                var position = Generator.Location.AsLocalPosition();
+                bool inSetLandblock = RealmManager.Peripherals.DungeonSets.IncludedInSet(position, "default");
+
+                if (inSetLandblock)
+                {
+                    deathTreasure.Id = 300391;
+                    deathTreasure.TreasureType = 3111;
+                    deathTreasure.Tier = 8;
+                    deathTreasure.LootQualityMod = 3;
+
+                    var scaledLoot = Ruleset.LootGenerationFactory.CreateRandomLootObjects(deathTreasure);
+
+                    LootGenerationFactory.ScaleInstanceLoot(Generator.CurrentLandblock, Generator.Location, scaledLoot);
+
+                    return scaledLoot;
+                }
+
+                var loot = Ruleset.LootGenerationFactory.CreateRandomLootObjects(deathTreasure);
+
+                return loot;
             }
             else
             {

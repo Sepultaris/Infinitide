@@ -114,7 +114,7 @@ namespace ACE.Server.WorldObjects
                 return CombatType.Missile;
         }
 
-        public DamageEvent DamageTarget(Creature target, WorldObject damageSource)
+        public DamageEvent DamageTarget(Creature target, WorldObject damageSource, bool aoe)
         {
             if (target.Health.Current <= 0)
                 return null;

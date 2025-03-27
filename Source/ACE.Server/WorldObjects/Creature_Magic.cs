@@ -187,23 +187,17 @@ namespace ACE.Server.WorldObjects
 
         public Dictionary<Creature, float> GetMagicAOETarget(Player player, Creature target, WorldObject weapon, float range)
         {
-            //if (!weapon.IsCleaving) return null;
-            var objectVar = this;
-
-            // sort visible objects by ascending distance
             var visible = PhysicsObj.ObjMaint.GetVisibleObjectsValuesWhere(o => o.WeenieObj.WorldObject != null);
-            visible.Sort(DistanceComparator);
 
-            Dictionary<Creature, float> distanceMap = new Dictionary<Creature, float>();
-            var cleaveTargets = new List<Creature>();
+            Dictionary<Creature, float> distanceMap = new Dictionary<Creature, float>();var cleaveTargets = new List<Creature>();
 
             foreach (var obj in visible)
             {
-                // cleaving skips original target
+                // aoe skips original target
                 if (obj.ID == target.PhysicsObj.ID)
                     continue;
 
-                // only cleave creatures
+                // only aoe creatures
                 var creature = obj.WeenieObj.WorldObject as Creature;
 
                 if (creature == null || creature.Teleporting || creature.IsDead) continue;
@@ -224,7 +218,6 @@ namespace ACE.Server.WorldObjects
             }
 
             distanceMap.OrderBy(pair => pair.Value).Select(pair => pair.Key);
-            cleaveTargets = distanceMap.OrderBy(pair => pair.Value).Select(pair => pair.Key).ToList();
 
             return distanceMap;
         }

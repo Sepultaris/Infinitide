@@ -506,27 +506,21 @@ namespace ACE.Server.WorldObjects
 
         public static readonly float PunchThroughCylRange = 7.0f;
 
-        public List<Creature> GetPunchThroughTargets(Creature target, WorldObject weapon)
+        public Dictionary<Creature, float> GetMissileAoEtarget(Player player, Creature target, float range)
         {
-            var player = this as Player;
-
-            //if (!weapon.IsCleaving) return null;
-
-            // sort visible objects by ascending distance
             var visible = PhysicsObj.ObjMaint.GetVisibleObjectsValuesWhere(o => o.WeenieObj.WorldObject != null);
-            visible.Sort(DistanceComparator);
 
-            var punchThroughTargets = new List<Creature>();
-            //var totalTargets = weapon.CleaveTargets;
+            Dictionary<Creature, float> distanceMap = new Dictionary<Creature, float>(); var cleaveTargets = new List<Creature>();
 
             foreach (var obj in visible)
             {
-                // cleaving skips original target
+                // aoe skips original target
                 if (obj.ID == target.PhysicsObj.ID)
                     continue;
 
-                // only cleave creatures
+                // only aoe creatures
                 var creature = obj.WeenieObj.WorldObject as Creature;
+
                 if (creature == null || creature.Teleporting || creature.IsDead) continue;
 
                 if (player != null && player.CheckPKStatusVsTarget(creature, null) != null)
@@ -538,22 +532,15 @@ namespace ACE.Server.WorldObjects
                 if (creature is CombatPet && (player != null || this is CombatPet))
                     continue;
 
-                // no objects in cleave range
-                var cylDist = GetCylinderDistance(creature);
-                if (cylDist > PunchThroughCylRange)
-                    return punchThroughTargets;
+                float distance = target.GetCylinderDistance(creature);
 
-                // only cleave in front of attacker
-                var angle = GetAngle(creature);
-                if (Math.Abs(angle) > PunchThroughAngle)
-                    continue;
-
-                // found cleavable object
-                punchThroughTargets.Add(creature);
-                /*if (punchThroughTargets.Count == totalTargets)
-                    break;*/
+                if (distance < MagicAoeRange)
+                    distanceMap.Add(creature, distance);
             }
-            return punchThroughTargets;
+
+            distanceMap.OrderBy(pair => pair.Value).Select(pair => pair.Key);
+
+            return distanceMap;
         }
     }
 }

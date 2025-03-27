@@ -322,13 +322,12 @@ namespace ACE.Server.WorldObjects
 
                     if (player != null && Spell.School == MagicSchool.WarMagic)
                     {
-
                         var aoeRange = GetAoERange(player.GetCreatureSkill(Skill.WarMagic).Current);
 
                         foreach (var aoeTarget in player.GetMagicAOETarget(player, creatureTarget, player.GetEquippedWeapon(), (float)aoeRange))
                         {
                             var aoeDamage = CalculateDamage(ProjectileSource, aoeTarget.Key, ref critical, ref critDefended, ref overpower) / 2;
-                            var cylDist = aoeTarget.Key.GetCylinderDistance(target);
+                            var cylDist = aoeTarget.Value;
 
                             if (cylDist < 0)
                                 cylDist = 0;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 using ACE.Entity.Enum;
@@ -243,6 +244,7 @@ namespace ACE.Server.WorldObjects
                 UpdateVitalDelta(Stamina, -staminaCost);
 
                 var projectile = LaunchProjectile(launcher, ammo, target, origin, orientation, velocity);
+
                 UpdateAmmoAfterLaunch(ammo);
             });
 

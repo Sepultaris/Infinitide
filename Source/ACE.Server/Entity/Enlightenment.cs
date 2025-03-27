@@ -62,21 +62,9 @@ namespace ACE.Server.Entity
 
         public static bool VerifyRequirements(Player player)
         {
-            if (player.Level < 275)
+            if (player.Level < 10000)
             {
-                player.Session.Network.EnqueueSend(new GameMessageSystemChat($"You must be level 275 for enlightenment.", ChatMessageType.Broadcast));
-                return false;
-            }
-
-            if (!VerifyLumAugs(player))
-            {
-                player.Session.Network.EnqueueSend(new GameMessageSystemChat($"You must have all luminance auras for enlightenment.", ChatMessageType.Broadcast));
-                return false;
-            }
-
-            if (!VerifySocietyMaster(player))
-            {
-                player.Session.Network.EnqueueSend(new GameMessageSystemChat($"You must be a Master of one of the Societies of Dereth for enlightenment.", ChatMessageType.Broadcast));
+                player.Session.Network.EnqueueSend(new GameMessageSystemChat($"You must be level 10,000 for enlightenment.", ChatMessageType.Broadcast));
                 return false;
             }
 
@@ -94,30 +82,6 @@ namespace ACE.Server.Entity
             return true;
         }
 
-        public static bool VerifySocietyMaster(Player player)
-        {
-            return player.SocietyRankCelhan == 1001 || player.SocietyRankEldweb == 1001 || player.SocietyRankRadblo == 1001;
-        }
-
-        public static bool VerifyLumAugs(Player player)
-        {
-            var lumAugCredits = 0;
-
-            lumAugCredits += player.LumAugAllSkills;
-            lumAugCredits += player.LumAugSurgeChanceRating;
-            lumAugCredits += player.LumAugCritDamageRating;
-            lumAugCredits += player.LumAugCritReductionRating;
-            lumAugCredits += player.LumAugDamageRating;
-            lumAugCredits += player.LumAugDamageReductionRating;
-            lumAugCredits += player.LumAugItemManaUsage;
-            lumAugCredits += player.LumAugItemManaGain;
-            lumAugCredits += player.LumAugHealingRating;
-            lumAugCredits += player.LumAugSkilledCraft;
-            lumAugCredits += player.LumAugSkilledSpec;
-
-            return lumAugCredits == 65;
-        }
-
         public static void DequipAllItems(Player player)
         {
             var equippedObjects = player.EquippedObjects.Keys.ToList();
@@ -130,7 +94,6 @@ namespace ACE.Server.Entity
         {
             RemoveSociety(player);
             RemoveLuminance(player);
-            RemoveAetheria(player);
             RemoveAttributes(player);
             RemoveSkills(player);
             RemoveLevel(player);
@@ -165,37 +128,12 @@ namespace ACE.Server.Entity
 
         public static void RemoveLevel(Player player)
         {
-            player.TotalExperience = 0;
+            player.TotalExperience = 191226310247;
+            player.AvailableExperience = 191226310247;
             player.Session.Network.EnqueueSend(new GameMessagePrivateUpdatePropertyInt64(player, PropertyInt64.TotalExperience, player.TotalExperience ?? 0));
 
-            player.Level = 1;
+            player.Level = 275;
             player.Session.Network.EnqueueSend(new GameMessagePrivateUpdatePropertyInt(player, PropertyInt.Level, player.Level ?? 0));
-        }
-
-        public static void RemoveAetheria(Player player)
-        {
-            player.QuestManager.Erase("EFULNorthManaFieldUsed");
-            player.QuestManager.Erase("EFULSouthManaFieldUsed");
-            player.QuestManager.Erase("EFULEastManaFieldUsed");
-            player.QuestManager.Erase("EFULWestManaFieldUsed");
-            player.QuestManager.Erase("EFULCenterManaFieldUsed");
-
-            player.QuestManager.Erase("EFMLNorthManaFieldUsed");
-            player.QuestManager.Erase("EFMLSouthManaFieldUsed");
-            player.QuestManager.Erase("EFMLEastManaFieldUsed");
-            player.QuestManager.Erase("EFMLWestManaFieldUsed");
-            player.QuestManager.Erase("EFMLCenterManaFieldUsed");
-
-            player.QuestManager.Erase("EFLLNorthManaFieldUsed");
-            player.QuestManager.Erase("EFLLSouthManaFieldUsed");
-            player.QuestManager.Erase("EFLLEastManaFieldUsed");
-            player.QuestManager.Erase("EFLLWestManaFieldUsed");
-            player.QuestManager.Erase("EFLLCenterManaFieldUsed");
-
-            player.AetheriaFlags = AetheriaBitfield.None;
-            player.Session.Network.EnqueueSend(new GameMessagePrivateUpdatePropertyInt(player, PropertyInt.AetheriaBitfield, 0));
-
-            player.SendMessage("Your mastery of Aetheric magics fades.", ChatMessageType.Broadcast);
         }
 
         public static void RemoveAttributes(Player player)
@@ -285,9 +223,9 @@ namespace ACE.Server.Entity
             player.LumAugAllSkills = 0;
             player.Session.Network.EnqueueSend(new GameMessagePrivateUpdatePropertyInt(player, PropertyInt.LumAugAllSkills, 0));
 
-            player.AvailableLuminance = null;
+            player.AvailableLuminance = 0;
             player.Session.Network.EnqueueSend(new GameMessagePrivateUpdatePropertyInt64(player, PropertyInt64.AvailableLuminance, 0));
-            player.MaximumLuminance = null;
+            player.MaximumLuminance = 10000000;
             player.Session.Network.EnqueueSend(new GameMessagePrivateUpdatePropertyInt64(player, PropertyInt64.MaximumLuminance, 0));
 
             player.SendMessage("Your Luminance and Luminance Auras fade from your spirit.", ChatMessageType.Broadcast);

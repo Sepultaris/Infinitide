@@ -1088,27 +1088,8 @@ namespace ACE.Server.WorldObjects
 
                     break;
                 case MagicSchool.VoidMagic:
-                    if (caster.IsCleaving)
-                    {
-                        if (target != null)
-                        {
-                            VoidMagic(target, spell, caster, isWeaponSpell);
-                            var cleave = GetMagicCleaveTarget(targetCreature, caster);
-
-                            foreach (var cleaveHit in cleave)
-                            {
-
-                                VoidMagic(cleaveHit, spell, caster, isWeaponSpell);
-                            }
-                            break;
-                        }
-                        else
-                            VoidMagic(target, spell, caster, isWeaponSpell);
-
-                    }
-                    else
-                        VoidMagic(target, spell, caster, isWeaponSpell);
-
+                    
+                    VoidMagic(target, spell, caster, isWeaponSpell);
 
                     break;
 
@@ -1519,57 +1500,6 @@ namespace ACE.Server.WorldObjects
         {
             if (!SquelchManager.Squelches.Contains(source, msgType))
                 Session.Network.EnqueueSend(new GameMessageSystemChat(msg, msgType));
-        }
-
-        public List<Creature> GetMagicCleaveTarget(Creature target, WorldObject weapon)
-        {
-            var player = this as Player;
-
-            if (!weapon.IsCleaving) return null;
-
-            // sort visible objects by ascending distance
-            var visible = PhysicsObj.ObjMaint.GetVisibleObjectsValuesWhere(o => o.WeenieObj.WorldObject != null);
-            visible.Sort(DistanceComparator);
-
-            var cleaveTargets = new List<Creature>();
-            var totalCleaves = weapon.CleaveTargets;
-
-            foreach (var obj in visible)
-            {
-                if (target == null)
-                    return null;
-                if (obj.ID == target.PhysicsObj.ID || target == null)
-                    continue;
-
-                // only cleave creatures
-                var creature = obj.WeenieObj.WorldObject as Creature;
-                if (creature == null || creature.Teleporting || creature.IsDead) continue;
-
-                if (player != null && player.CheckPKStatusVsTarget(creature, null) != null)
-                    continue;
-
-                if (!creature.Attackable && creature.TargetingTactic == TargetingTactic.None || creature.Teleporting)
-                    continue;
-
-                if (creature is CombatPet && (player != null || this is CombatPet))
-                    continue;
-
-                // no objects in cleave range
-                var cylDist = GetCylinderDistance(creature);
-                if (cylDist > MagicCleaveCylRange)
-                    return cleaveTargets;
-
-                // only cleave in front of attacker
-                var angle = GetAngle(creature);
-                if (Math.Abs(angle) > CleaveAngle / 2.0f)
-                    continue;
-
-                // found cleavable object
-                cleaveTargets.Add(creature);
-                if (cleaveTargets.Count == totalCleaves)
-                    break;
-            }
-            return cleaveTargets;
         }
     }
 }

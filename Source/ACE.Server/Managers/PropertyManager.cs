@@ -685,7 +685,13 @@ namespace ACE.Server.Managers
                 ("vitae_penalty", new Property<double>(0.05, "the amount of vitae penalty a player gets per death")),
                 ("vitae_penalty_max", new Property<double>(0.40, "the maximum vitae penalty a player can have")),
                 ("void_pvp_modifier", new Property<double>(0.5, "Scales the amount of damage players take from Void Magic. Defaults to 0.5, as per retail. For earlier content where DRR isn't as readily available, this can be adjusted for balance.")),
-                ("xp_modifier", new Property<double>(1.0, "scales the amount of xp received by players"))
+                ("xp_modifier", new Property<double>(1.0, "scales health of monsters in instances")),
+                ("MobStrengthScaleFactor", new Property<double>(0.59, "scales strength of monsters in instances")),
+                ("MobEnduranceScaleFactor", new Property<double>(8.8, "scales endurance of monsters in instances")),
+                ("MobCoordinationScaleFactor", new Property<double>(0.59, "scales coordination of monsters in instances")),
+                ("MobQuicknessScaleFactor", new Property<double>(0.59, "scales quickness of monsters in instances")),
+                ("MobFocusScaleFactor", new Property<double>(0.59, "scales focus of monsters in instances")),
+                ("MobSelfScaleFactor", new Property<double>(0.59, "scales self of monsters in instances"))
                 );
 
         public static readonly ReadOnlyDictionary<string, Property<string>> DefaultStringProperties =
