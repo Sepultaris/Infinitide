@@ -63,7 +63,9 @@ namespace ACE.Server.WorldObjects
 
             if (RestedXp > 0)
             {
-                var xpBonus = (long)(m_amount * PropertyManager.GetLong("RestedXpMultiplier").Item);
+                double restedXpMultiplier = PropertyManager.GetDouble("RestedXpMultiplier").Item;
+                long xpBonus = (long)(m_amount * restedXpMultiplier);
+
                 if (RestedXp >= xpBonus)
                 {
                     m_amount += xpBonus;
