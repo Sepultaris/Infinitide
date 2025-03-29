@@ -32,7 +32,8 @@ namespace ACE.Entity.Enum.Properties
         [ServerOnly]
         VerifyXp              = 9003,
         VitaeCpPool           = 9004,
-        TotalXpBeyond         = 9005
+        TotalXpBeyond         = 9005,
+        RestedXp              = 9006
     }
 
     public static class PropertyInt64Extensions

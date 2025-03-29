@@ -134,10 +134,29 @@ namespace ACE.Server.InfinitideMods
             return xp;
         }
 
-        public long GetXPForLevel(int level)
+        public static long GetXPForLevel(int level)
         {
             long xp = (long)(4000000000 * Math.Pow(1.001, level - 275));
             return xp;
+        }
+
+        public static long CalculateRestedXP(Player player)
+        {
+            if (player.LogoffTimestamp == null)
+            {
+                player.LogoffTimestamp = 0;
+                return 0;
+            }
+
+            var currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var timeDifference = currentTime - player.LogoffTimestamp.Value;
+
+            var hoursRested = Math.Min(timeDifference / 3600, 72);
+            var xpForNextLevel = GetXPForLevel(player.Level.Value + 1);
+
+            player.RestedXpCalculated = true;
+
+            return (long)(xpForNextLevel * 0.1 * hoursRested);
         }
     }
 }

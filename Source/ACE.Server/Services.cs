@@ -406,6 +406,9 @@ namespace ACE.Server
             ModManager.RegisterCommands();
             ModManager.ListMods();
 
+            log.Info("Initializing Discord Relay");
+            InfinitideMods.DiscordRelay.Initialize();
+
             if (!PropertyManager.GetBool("world_closed", false).Item)
             {
                 WorldManager.Open(null);

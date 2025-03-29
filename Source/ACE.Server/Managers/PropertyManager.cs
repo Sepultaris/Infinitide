@@ -691,7 +691,9 @@ namespace ACE.Server.Managers
                 ("MobCoordinationScaleFactor", new Property<double>(0.59, "scales coordination of monsters in instances")),
                 ("MobQuicknessScaleFactor", new Property<double>(0.59, "scales quickness of monsters in instances")),
                 ("MobFocusScaleFactor", new Property<double>(0.59, "scales focus of monsters in instances")),
-                ("MobSelfScaleFactor", new Property<double>(0.59, "scales self of monsters in instances"))
+                ("MobSelfScaleFactor", new Property<double>(0.59, "scales self of monsters in instances")),
+                ("ArmorLevelScaleFactor", new Property<double>(4.0, "scales the armor level of instanced loot")),
+                ("RestedXpMultiplier", new Property<double>(1.0, "rested xp multiplier"))
                 );
 
         public static readonly ReadOnlyDictionary<string, Property<string>> DefaultStringProperties =

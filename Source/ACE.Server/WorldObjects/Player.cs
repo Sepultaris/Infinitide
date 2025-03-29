@@ -516,6 +516,7 @@ namespace ACE.Server.WorldObjects
                     EnqueueBroadcastPhysicsState();
 
                     LogoffTimestamp = Time.GetFutureUnixTime(PropertyManager.GetLong("pk_timer").Item);
+                    RestedXpCalculated = false;
                     PlayerManager.AddPlayerToLogoffQueue(this);
                 }
                 return false;

@@ -61,6 +61,25 @@ namespace ACE.Server.WorldObjects
                 }
             }
 
+            if (RestedXp > 0)
+            {
+                var xpBonus = (long)(m_amount * PropertyManager.GetLong("RestedXpMultiplier").Item);
+                if (RestedXp >= xpBonus)
+                {
+                    m_amount += xpBonus;
+                    RestedXp -= xpBonus;
+                    //send message to player
+                    Session.Network.EnqueueSend(new GameMessageSystemChat($"You have gained an additional {xpBonus} XP from your rested experience bonus!", ChatMessageType.Broadcast));
+                }
+                else
+                {
+                    m_amount += (long)RestedXp;
+                    RestedXp = 0;
+                    //send message to player
+                    Session.Network.EnqueueSend(new GameMessageSystemChat($"You have used up your rested experience bonus! You gained an additional {RestedXp} XP.", ChatMessageType.Broadcast));
+                }
+            }
+
             if (Enlightenment >= 1)
                 m_amount = (long)(m_amount + ((m_amount * 0.2f) * Enlightenment));
 

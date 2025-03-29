@@ -1462,5 +1462,17 @@ namespace ACE.Server.WorldObjects
             get => GetProperty(PropertyString.InviterName);
             set { if (value == null) RemoveProperty(PropertyString.InviterName); else SetProperty(PropertyString.InviterName, value); }
         }
+
+        public bool RestedXpCalculated
+        {
+            get => GetProperty(PropertyBool.RestedXpCalculated) ?? false;
+            set { if (!value) RemoveProperty(PropertyBool.RestedXpCalculated); else SetProperty(PropertyBool.RestedXpCalculated, value); }
+        }
+
+        public long? RestedXp
+        {
+            get => GetProperty(PropertyInt64.RestedXp);
+            set { if (!value.HasValue) RemoveProperty(PropertyInt64.RestedXp); else SetProperty(PropertyInt64.RestedXp, value.Value); }
+        }
     }
 }

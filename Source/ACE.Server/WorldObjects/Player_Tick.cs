@@ -107,6 +107,15 @@ namespace ACE.Server.WorldObjects
             }
 
             Teleport_Invitation.HandleTeleportInvitation(InviterName, this);
+
+            if (RestedXpCalculated == false)
+            {
+                // Calculate Rested XP if it hasn't been calculated yet
+                // This should only happen once when the player first logs in
+                var restedXp = InfinitidePlayer.CalculateRestedXP(this);
+
+                RestedXp = restedXp;
+            }
         }
 
         private static readonly TimeSpan MaximumTeleportTime = TimeSpan.FromMinutes(5);

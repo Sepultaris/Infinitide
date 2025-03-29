@@ -343,7 +343,8 @@ namespace ACE.Server.Factories
                             {
                                 if (obj.ArmorLevel > 0)
                                 {
-                                    var newArmorLevel = obj.ArmorLevel + ((instanceLevel / 100) * 4);
+                                    var armorLevelScalingFactor = PropertyManager.GetDouble("ArmorLevelScalingFactor").Item;
+                                    var newArmorLevel = obj.ArmorLevel + (int?)((instanceLevel / 100) * armorLevelScalingFactor);
 
                                     obj.ArmorLevel = newArmorLevel;
                                     obj.BaseArmorLevel = obj.ArmorLevel;
@@ -476,6 +477,15 @@ namespace ACE.Server.Factories
                             obj.GearCrit = petDeviceRating7;
                             obj.GearCritResist = petDeviceRating8;
                         }
+                    }
+
+                    var gbAdapterRoll = ThreadSafeRandom.Next(0.00f, 1.00f);
+
+                    if (gbAdapterRoll <= 0.05)
+                    {
+                        WorldObject newGBAdapter = WorldObjectFactory.CreateNewWorldObject(802596);
+
+                        loot.Add(newGBAdapter);
                     }
                 }
             }
