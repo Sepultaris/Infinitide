@@ -23,8 +23,9 @@ namespace ACE.Server.Command.Handlers
                 {
                     string Joiner = string.Join(" ", f.Name);
                     HandleRecallFriend(session, Joiner);
-                    return;
                 }
+
+                return;
             }
         }
 
@@ -36,8 +37,9 @@ namespace ACE.Server.Command.Handlers
             {
                 string Joiner = string.Join(" ", parameters);
                 HandleRecallFriend(session, Joiner);
-                return;
             }
+
+            return;
         } 
 
         [CommandHandler("raise", AccessLevel.Player, CommandHandlerFlag.RequiresWorld, 1, "Allows you to raise attributes past maximum. Allows you to raise Luminance Augmentation for Damage Rating (Destruction), Damage Reduction (Invulnerability), Critical Damage (Glory) and Critical Damage Reduction (Temperance) and Max Health, Stamina, and Mana (Vitality).")]
@@ -562,7 +564,7 @@ namespace ACE.Server.Command.Handlers
         public static long GetXPForAttributeRaise(int level)
         {
             long baseCost = 10000000000;
-            double growthRate = 1.00008835; //1.00035
+            double growthRate = 1.00110; //1.00035
 
             long xpCost = (long)(baseCost * Math.Pow(growthRate, level - 1));
             return xpCost;

@@ -29,6 +29,7 @@ namespace ACE.Server.WorldObjects
 
             LoginTimestamp = lastLoginTimestamp;
             LastTeleportStartTimestamp = lastLoginTimestamp;
+            RestedXpCalculated = false;
 
             Character.LastLoginTimestamp = lastLoginTimestamp;
             Character.TotalLogins++;

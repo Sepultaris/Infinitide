@@ -343,7 +343,7 @@ namespace ACE.Server.Factories
                             {
                                 if (obj.ArmorLevel > 0)
                                 {
-                                    var armorLevelScalingFactor = PropertyManager.GetDouble("ArmorLevelScalingFactor").Item;
+                                    var armorLevelScalingFactor = PropertyManager.GetDouble("ArmorLevelScaleFactor").Item;
                                     var newArmorLevel = obj.ArmorLevel + (int?)((instanceLevel / 100) * armorLevelScalingFactor);
 
                                     obj.ArmorLevel = newArmorLevel;

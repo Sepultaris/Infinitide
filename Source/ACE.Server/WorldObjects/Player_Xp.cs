@@ -75,10 +75,11 @@ namespace ACE.Server.WorldObjects
                 }
                 else
                 {
+                    var restedXp = RestedXp;
                     m_amount += (long)RestedXp;
-                    RestedXp = 0;
                     //send message to player
-                    Session.Network.EnqueueSend(new GameMessageSystemChat($"You have used up your rested experience bonus! You gained an additional {RestedXp} XP.", ChatMessageType.Broadcast));
+                    Session.Network.EnqueueSend(new GameMessageSystemChat($"You have used up your rested experience bonus! You gained an additional {restedXp} XP.", ChatMessageType.Broadcast));
+                    RestedXp = 0;
                 }
             }
 

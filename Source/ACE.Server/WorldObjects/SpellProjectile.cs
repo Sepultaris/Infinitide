@@ -1,6 +1,6 @@
 using System;
 using System.Numerics;
-
+using System.Reflection.Metadata.Ecma335;
 using ACE.Common;
 using ACE.Entity;
 using ACE.Entity.Enum;
@@ -324,13 +324,25 @@ namespace ACE.Server.WorldObjects
                     {
                         var aoeRange = GetAoERange(player.GetCreatureSkill(Skill.WarMagic).Current);
 
+                        if (creatureTarget == null)
+                            return;
+
                         foreach (var aoeTarget in player.GetMagicAOETarget(player, creatureTarget, player.GetEquippedWeapon(), (float)aoeRange))
                         {
+                            if (aoeTarget.Key == null)
+                                continue;
+
+                            if (!aoeTarget.Key.IsAlive)
+                                continue;
+
                             var aoeDamage = CalculateDamage(ProjectileSource, aoeTarget.Key, ref critical, ref critDefended, ref overpower) / 2;
                             var cylDist = aoeTarget.Value;
 
                             if (cylDist < 0)
                                 cylDist = 0;
+
+                            if (aoeDamage == null)
+                                continue;
 
                             var scaledDamage = ScaleDamageByDistance((float)aoeDamage, cylDist, (float)aoeRange);
 

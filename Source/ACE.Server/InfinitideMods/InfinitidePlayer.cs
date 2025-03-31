@@ -151,7 +151,7 @@ namespace ACE.Server.InfinitideMods
             var currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var timeDifference = currentTime - player.LogoffTimestamp.Value;
 
-            var hoursRested = Math.Min(timeDifference / 3600, 72);
+            var hoursRested = Math.Min(timeDifference / 3600, 24);
             var xpForNextLevel = GetXPForLevel(player.Level.Value + 1);
 
             player.RestedXpCalculated = true;
