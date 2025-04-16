@@ -18,7 +18,6 @@ namespace ACE.Server.Realms
         public NullRealmException()
             : base("Instance ID may not be 0") { }
     }
-
     public sealed class InstancedPosition : UsablePosition
     {
         public readonly uint Instance;
