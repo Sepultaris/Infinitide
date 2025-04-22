@@ -644,7 +644,8 @@ namespace ACE.Server.Managers
                 ("rares_max_days_between", new Property<long>(45, "for rares_real_time_v2: the maximum number of days a player can go before a rare is generated on rare eligible creature kills")),
                 ("rares_max_seconds_between", new Property<long>(5256000, "for rares_real_time: the maximum number of seconds a player can go before a second chance at a rare is allowed on rare eligible creature kills that did not generate a rare")),
                 ("summoning_killtask_multicredit_cap", new Property<long>(2, "if allow_summoning_killtask_multicredit is enabled, the maximum # of killtask credits a player can receive from 1 kill")),
-                ("teleport_visibility_fix", new Property<long>(0, "Fixes some possible issues with invisible players and mobs. 0 = default / disabled, 1 = players only, 2 = creatures, 3 = all world objects"))
+                ("teleport_visibility_fix", new Property<long>(0, "Fixes some possible issues with invisible players and mobs. 0 = default / disabled, 1 = players only, 2 = creatures, 3 = all world objects")),
+                ("MeleeWeaponDamageMultiplier", new Property<long>(2, "the multipler for scaled melee weapon damage"))
                 );
 
         public static readonly ReadOnlyDictionary<string, Property<double>> DefaultDoubleProperties =
@@ -693,7 +694,9 @@ namespace ACE.Server.Managers
                 ("MobFocusScaleFactor", new Property<double>(0.59, "scales focus of monsters in instances")),
                 ("MobSelfScaleFactor", new Property<double>(0.59, "scales self of monsters in instances")),
                 ("ArmorLevelScaleFactor", new Property<double>(4.0, "scales the armor level of instanced loot")),
-                ("RestedXpMultiplier", new Property<double>(4.0, "rested xp multiplier"))
+                ("RestedXpMultiplier", new Property<double>(4.0, "rested xp multiplier")),
+                ("MissileWeaponDamageMultiplier", new Property<double>(10000.0, "the multiplier for scaled missile weapon damage")),
+                ("MagicWeaponDamageMultiplier", new Property<double>(20000.0, "the multiplier for scaled magic weapon damage"))
                 );
 
         public static readonly ReadOnlyDictionary<string, Property<string>> DefaultStringProperties =

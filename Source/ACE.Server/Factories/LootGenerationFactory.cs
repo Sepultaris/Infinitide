@@ -171,67 +171,67 @@ namespace ACE.Server.Factories
 
                         if (obj.W_WeaponType == WeaponType.Unarmed)
                         {
-                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * (int)PropertyManager.GetLong("MeleeWeaponDamageMultiplier").Item);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Sword)
                         {
-                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * (int)PropertyManager.GetLong("MeleeWeaponDamageMultiplier").Item);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Axe)
                         {
-                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * (int)PropertyManager.GetLong("MeleeWeaponDamageMultiplier").Item);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Mace)
                         {
-                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * (int)PropertyManager.GetLong("MeleeWeaponDamageMultiplier").Item);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Spear)
                         {
-                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * (int)PropertyManager.GetLong("MeleeWeaponDamageMultiplier").Item);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Dagger)
                         {
-                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * (int)PropertyManager.GetLong("MeleeWeaponDamageMultiplier").Item);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Staff)
                         {
-                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * (int)PropertyManager.GetLong("MeleeWeaponDamageMultiplier").Item);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.TwoHanded)
                         {
-                            var newDamage = obj.Damage + ((instanceLevel / 100) * 2);
+                            var newDamage = obj.Damage + ((instanceLevel / 100) * (int)PropertyManager.GetLong("MeleeWeaponDamageMultiplier").Item);
                             obj.Damage = newDamage;
                             obj.WeaponBaseDamage = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Thrown)
                         {
-                            var newDamage = obj.DamageMod + instanceLevel / 10000.0;
+                            var newDamage = obj.DamageMod + instanceLevel / PropertyManager.GetDouble("MissileWeaponDamageMultiplier").Item;
                             obj.DamageMod = newDamage;
                             obj.WeaponBaseDamageMod = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Bow)
                         {
-                            var newDamage = obj.DamageMod + instanceLevel / 10000.0;
+                            var newDamage = obj.DamageMod + instanceLevel / PropertyManager.GetDouble("MissileWeaponDamageMultiplier").Item;
                             obj.DamageMod = newDamage;
                             obj.WeaponBaseDamageMod = newDamage;
                         }
                         if (obj.W_WeaponType == WeaponType.Crossbow)
                         {
-                            var newDamage = obj.DamageMod + instanceLevel / 10000.0;
+                            var newDamage = obj.DamageMod + instanceLevel / PropertyManager.GetDouble("MissileWeaponDamageMultiplier").Item;
                             obj.DamageMod = newDamage;
                             obj.WeaponBaseDamageMod = newDamage;
                         }
@@ -239,7 +239,7 @@ namespace ACE.Server.Factories
                         {
                             if (obj.ElementalDamageMod != null)
                             {
-                                var newDamage = instanceLevel / 20000.0;
+                                var newDamage = instanceLevel / PropertyManager.GetDouble("MagicWeaponDamageMultiplier").Item;
                                 obj.ElementalDamageMod = obj.ElementalDamageMod + newDamage;
                                 obj.WeaponBaseDamageMod = obj.ElementalDamageMod + newDamage;
                             }
