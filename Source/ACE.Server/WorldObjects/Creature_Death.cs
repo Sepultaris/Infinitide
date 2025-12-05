@@ -32,6 +32,8 @@ namespace ACE.Server.WorldObjects
         /// <param name="lastDamager">The last damager that landed the death blow</param>
         /// <param name="damageType">The damage type for the death message</param>
         /// <param name="criticalHit">True if the death blow was a critical hit, generates a critical death message</param>
+        ///
+
         public virtual DeathMessage OnDeath(DamageHistoryInfo lastDamager, DamageType damageType, bool criticalHit = false)
         {
             if (onDeathEntered)
@@ -149,6 +151,18 @@ namespace ACE.Server.WorldObjects
                     var playerMainWeapon = topDamagerPlayer.GetEquippedWeapon();
                     var playerOffhandWeapon = topDamagerPlayer.GetEquippedOffHand();
                     var playerCaster = topDamagerPlayer.GetEquippedWand();
+
+                    List<WorldObject> wornGear = new List<WorldObject>();
+
+                    var head = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.Head);
+                    var hands = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.Hands);
+                    var feet = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.Feet);
+                    var outerwearChest = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.OuterwearChest);
+                    var outerwearAbdomen = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.OuterwearAbdomen);
+                    var outerwearLowerArms = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.OuterwearLowerArms);
+                    var outerwearLowerLegs = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.OuterwearLowerLegs);
+                    var outerwearUpperArms = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.OuterwearUpperArms);
+                    var outerwearUpperLegs = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.OuterwearUpperLegs);
 
                     if (playerMainWeapon != null && playerMainWeapon.ItemLevel != playerMainWeapon.MaxLevel)
                     {

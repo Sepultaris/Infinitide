@@ -15,6 +15,7 @@ using ACE.Server.Factories.Entity;
 using ACE.Server.Factories.Enum;
 using ACE.Server.Factories.Tables;
 using ACE.Server.Factories.Tables.Wcids;
+using ACE.Server.InfinitideMods;
 using ACE.Server.Managers;
 using ACE.Server.Realms;
 using ACE.Server.WorldObjects;
@@ -248,7 +249,8 @@ namespace ACE.Server.Factories
                         if (obj.ItemType == ItemType.MeleeWeapon || obj.WeaponSkill == Skill.HeavyWeapons || obj.WeaponSkill == Skill.LightWeapons || obj.WeaponSkill == Skill.FinesseWeapons)
                         {
                             var maxlevel = 100;
-                            var basexp = (long)(1000000000 * Math.Pow(1.001, instanceLevel - 275) / 3);
+                            var xpToLevel = InfinitidePlayer.GetXPForLevel(instanceLevel + 1);
+                            var basexp = (long)(1000000000 * Math.Pow(1.0005, instanceLevel - 275) / 3) + xpToLevel / 10;
                             var newName = obj.Name + $" ({instanceLevel})";
 
                             obj.Name = newName;
@@ -278,7 +280,8 @@ namespace ACE.Server.Factories
                         if (obj.ItemType == ItemType.MissileWeapon || obj.WeaponSkill == Skill.MissileWeapons)
                         {
                             var maxlevel = 100;
-                            var basexp = (long)(1000000000 * Math.Pow(1.001, instanceLevel - 275) / 3);
+                            var xpToLevel = InfinitidePlayer.GetXPForLevel(instanceLevel + 1);
+                            var basexp = (long)(1000000000 * Math.Pow(1.0005, instanceLevel - 275) / 3) + xpToLevel / 10;
                             var newName = obj.Name + $" ({instanceLevel})";
 
                             obj.Name = newName;
@@ -296,7 +299,8 @@ namespace ACE.Server.Factories
                         if (obj.ItemType == ItemType.Caster || obj.WeaponSkill == Skill.WarMagic || obj.WeaponSkill == Skill.VoidMagic)
                         {
                             var maxlevel = 100;
-                            var basexp = (long)(1000000000 * Math.Pow(1.001, instanceLevel - 275) / 3);
+                            var xpToLevel = InfinitidePlayer.GetXPForLevel(instanceLevel + 1);
+                            var basexp = (long)(1000000000 * Math.Pow(1.0005, instanceLevel - 275) / 3) + xpToLevel / 10;
                             var newName = obj.Name + $" ({instanceLevel})";
 
                             obj.Name = newName;
@@ -353,7 +357,8 @@ namespace ACE.Server.Factories
                                     obj.GearCritDamageResist = gearRating2;
 
                                     var maxlevel = 100;
-                                    var basexp = (long)(1000000000 * Math.Pow(1.001, instanceLevel - 275) / 3);
+                                    var xpToLevel = InfinitidePlayer.GetXPForLevel(instanceLevel + 1);
+                                    var basexp = (long)(1000000000 * Math.Pow(1.0005, instanceLevel - 275) / 3) + xpToLevel / 10;
 
                                     obj.ItemMaxLevel = maxlevel;
                                     obj.SetProperty(PropertyInt.ItemXpStyle, 1);
@@ -388,7 +393,8 @@ namespace ACE.Server.Factories
                                     obj.ArmorLevel = curve;
                                 }
                                 var maxlevel = 100;
-                                var basexp = (long)(1000000000 * Math.Pow(1.001, instanceLevel - 275) / 3);
+                                var xpToLevel = InfinitidePlayer.GetXPForLevel(instanceLevel + 1);
+                                var basexp = (long)(1000000000 * Math.Pow(1.0005, instanceLevel - 275) / 3) + xpToLevel / 10;
 
                                 obj.ItemMaxLevel = maxlevel;
                                 obj.SetProperty(PropertyInt.ItemXpStyle, 1);

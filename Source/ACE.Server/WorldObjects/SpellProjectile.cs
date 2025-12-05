@@ -411,8 +411,13 @@ namespace ACE.Server.WorldObjects
             double minRange = 0.75;
             double maxRange = 5.0;
 
-            if (skillLevel < 0 || skillLevel > maxSkillLevel)
-                throw new ArgumentOutOfRangeException(nameof(skillLevel), "Skill level must be between 0 and 5000.");
+            if (skillLevel < 0)
+                skillLevel = 0;
+            if (skillLevel > maxSkillLevel)
+                skillLevel = maxSkillLevel;
+
+            /*if (skillLevel < 0 || skillLevel > maxSkillLevel)
+                throw new ArgumentOutOfRangeException(nameof(skillLevel), "Skill level must be between 0 and 5000.");*/
 
             double normalizedSkill = skillLevel / maxSkillLevel;
             return minRange + (maxRange - minRange) * normalizedSkill;

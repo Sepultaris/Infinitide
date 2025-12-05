@@ -74,18 +74,38 @@ namespace ACE.Server.Realms
         public int CalculateInstanceLevel(LandblockId landblockId)
         {
             var lb = LandblockManager.GetLandblockUnsafe(landblockId, Instance); //Get current instanced landblock
-            var players = lb.GetAllCreatures().Where(x => x is Player);
-            var numberOfPlayers = players.Count();
+            var landblockGroup = lb.CurrentLandblockGroup;
+
+            List<Creature> playerList = new List<Creature>();
+
+            foreach (Entity.Landblock landblock in landblockGroup)
+            {
+                var players = landblock.GetAllCreatures().Where(x => x is Player);
+
+                if (players.Count() > 0)
+                {
+                    foreach (var p in players)
+                    {
+                        if (!playerList.Contains(p))
+                            playerList.Add(p);
+                    }
+                }
+            }
+
+            var numberOfPlayers = playerList.Count();
             var instanceLevel = 0;
 
-            if (players.Count() > 0)
+            if (playerList.Count > 0)
             {
-                foreach (var p in players)
+                foreach (var p in playerList)
                 {
                     instanceLevel += (int)p.Level;
                 }
+
                 instanceLevel = instanceLevel / numberOfPlayers;
             }
+
+            playerList.Clear();
 
             return (int)Math.Round((decimal)instanceLevel);
         }
@@ -93,11 +113,26 @@ namespace ACE.Server.Realms
         public int GetHighestPlayerLevelInInstance(LandblockId landblockId)
         {
             var lb = LandblockManager.GetLandblockUnsafe(landblockId, Instance); //Get current instanced landblock
-            var players = lb.GetAllCreatures().Where(x => x is Player);
+            var landblockGroup = lb.CurrentLandblockGroup;
 
-            if (players.Count() > 0)
+            List<Creature> playerList = new List<Creature>();
+
+            foreach (Entity.Landblock landblock in landblockGroup)
             {
-                var level = players.Max(x => x.Level);
+                var players = landblock.GetAllCreatures().Where(x => x is Player);
+
+                foreach (var p in players)
+                {
+                    if (!playerList.Contains(p))
+                        playerList.Add(p);
+                }
+            }
+
+            if (playerList.Count() > 0)
+            {
+                var level = playerList.Max(x => x.Level);
+
+                playerList.Clear();
 
                 return (int)level;
             }
@@ -268,7 +303,7 @@ namespace ACE.Server.Realms
         /// <summary>
         /// Returns TRUE if current cell is a House cell
         /// </summary>
-        public bool IsRestrictable(Landblock landblock)
+        public bool IsRestrictable(Entity.Landblock landblock)
         {
             var cell = landblock.IsDungeon ? Cell : GetOutdoorCell();
 

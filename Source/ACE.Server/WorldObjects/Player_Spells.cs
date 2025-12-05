@@ -191,7 +191,7 @@ namespace ACE.Server.WorldObjects
         {
             if (!item.HasItemSet)
             {
-                ApplyDamageAndArmorBonuses(item, (item.ItemLevel.Value - prevItemLevel));
+                ApplyDamageAndArmorBonuses(item, item.ItemLevel.Value - prevItemLevel);
 
                 if (item.ItemType == ItemType.MissileWeapon || item.ItemType == ItemType.MeleeWeapon || item.ItemType == ItemType.Caster)
                 {
