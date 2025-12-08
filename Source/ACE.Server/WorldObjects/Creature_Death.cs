@@ -148,113 +148,227 @@ namespace ACE.Server.WorldObjects
 
                 if (topDamagerPlayer != null)
                 {
-                    var playerMainWeapon = topDamagerPlayer.GetEquippedWeapon();
-                    var playerOffhandWeapon = topDamagerPlayer.GetEquippedOffHand();
-                    var playerCaster = topDamagerPlayer.GetEquippedWand();
+                    UpdateGearCreatureKillHistory(topDamagerPlayer);
+                }
+            }
+        }
 
-                    List<WorldObject> wornGear = new List<WorldObject>();
+        public void UpdateGearCreatureKillHistory(Player player)
+        {
+            if (player != null)
+            {
+                List<WorldObject> equippedItems = new List<WorldObject>();
 
-                    var head = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.Head);
-                    var hands = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.Hands);
-                    var feet = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.Feet);
-                    var outerwearChest = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.OuterwearChest);
-                    var outerwearAbdomen = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.OuterwearAbdomen);
-                    var outerwearLowerArms = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.OuterwearLowerArms);
-                    var outerwearLowerLegs = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.OuterwearLowerLegs);
-                    var outerwearUpperArms = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.OuterwearUpperArms);
-                    var outerwearUpperLegs = topDamagerPlayer.GetEquippedClothingArmor(CoverageMask.OuterwearUpperLegs);
+                var playerMainWeapon = player.GetEquippedWeapon();
+                var playerOffhandWeapon = player.GetEquippedOffHand();
+                var playerCaster = player.GetEquippedWand();
+                var head = player.GetEquippedClothingArmor(CoverageMask.Head);
+                var hands = player.GetEquippedClothingArmor(CoverageMask.Hands);
+                var feet = player.GetEquippedClothingArmor(CoverageMask.Feet);
+                var outerwearChest = player.GetEquippedClothingArmor(CoverageMask.OuterwearChest);
+                var outerwearAbdomen = player.GetEquippedClothingArmor(CoverageMask.OuterwearAbdomen);
+                var outerwearLowerArms = player.GetEquippedClothingArmor(CoverageMask.OuterwearLowerArms);
+                var outerwearLowerLegs = player.GetEquippedClothingArmor(CoverageMask.OuterwearLowerLegs);
+                var outerwearUpperArms = player.GetEquippedClothingArmor(CoverageMask.OuterwearUpperArms);
+                var outerwearUpperLegs = player.GetEquippedClothingArmor(CoverageMask.OuterwearUpperLegs);
 
-                    if (playerMainWeapon != null && playerMainWeapon.ItemLevel != playerMainWeapon.MaxLevel)
+                if (playerMainWeapon != null)
+                    equippedItems.Add(playerMainWeapon);
+                if (playerOffhandWeapon != null)
+                    equippedItems.Add(playerOffhandWeapon);
+                if (playerCaster != null)
+                    equippedItems.Add(playerCaster);
+
+                foreach (var i in head)
+                {
+                    if (!equippedItems.Contains(i))
                     {
-                        var weaponHistory = playerMainWeapon.GetMonsterKillHistory();
-
-                        if (weaponHistory != null)
-                        {
-                            if (weaponHistory.Count == 0)
-                            {
-                                playerMainWeapon.AddMonsterToKillHistory(CreatureType.Value, 1);
-
-                                return;
-                            }
-
-                            if (weaponHistory.ContainsKey(CreatureType.Value))
-                            {
-                                var kills = weaponHistory[CreatureType.Value];
-
-                                playerMainWeapon.RemoveMonsterFromKillHistory(CreatureType.Value);
-                                playerMainWeapon.AddMonsterToKillHistory(CreatureType.Value, kills + 1);
-
-                                return;
-                            }
-                            else
-                            {
-                                playerMainWeapon.AddMonsterToKillHistory(CreatureType.Value, 1);
-
-                                return;
-                            }
-                        }
+                        equippedItems.Add(i);
                     }
-                    if (playerOffhandWeapon != null && playerOffhandWeapon.ItemType == ItemType.MeleeWeapon && playerOffhandWeapon.ItemLevel != playerOffhandWeapon.MaxLevel)
+                }
+                foreach (var i in hands)
+                {
+                    if (!equippedItems.Contains(i))
                     {
-                        var weaponHistory = playerOffhandWeapon.GetMonsterKillHistory();
-
-                        if (weaponHistory != null)
-                        {
-                            if (weaponHistory.Count == 0)
-                            {
-                                playerOffhandWeapon.AddMonsterToKillHistory(CreatureType.Value, 1);
-
-                                return;
-                            }
-
-                            if (weaponHistory.ContainsKey(CreatureType.Value))
-                            {
-                                var kills = weaponHistory[CreatureType.Value];
-
-                                playerOffhandWeapon.RemoveMonsterFromKillHistory(CreatureType.Value);
-                                playerOffhandWeapon.AddMonsterToKillHistory(CreatureType.Value, kills + 1);
-
-                                return;
-                            }
-                            else
-                            {
-                                playerOffhandWeapon.AddMonsterToKillHistory(CreatureType.Value, 1);
-
-                                return;
-                            }
-                        }
+                        equippedItems.Add(i);
                     }
-                    if (playerCaster != null && playerCaster.ItemLevel != playerCaster.MaxLevel)
+                }
+                foreach (var i in feet)
+                {
+                    if (!equippedItems.Contains(i))
                     {
-                        var weaponHistory = playerCaster.GetMonsterKillHistory();
+                        equippedItems.Add(i);
+                    }
+                }
+                foreach (var i in outerwearChest)
+                {
+                    if (!equippedItems.Contains(i))
+                    {
+                        equippedItems.Add(i);
+                    }
+                }
+                foreach (var i in outerwearAbdomen)
+                {
+                    if (!equippedItems.Contains(i))
+                    {
+                        equippedItems.Add(i);
+                    }
+                }
+                foreach (var i in outerwearLowerArms)
+                {
+                    if (!equippedItems.Contains(i))
+                    {
+                        equippedItems.Add(i);
+                    }
+                }
+                foreach (var i in outerwearLowerLegs)
+                {
+                    if (!equippedItems.Contains(i))
+                    {
+                        equippedItems.Add(i);
+                    }
+                }
+                foreach (var i in outerwearUpperArms)
+                {
+                    if (!equippedItems.Contains(i))
+                    {
+                        equippedItems.Add(i);
+                    }
+                }
+                foreach (var i in outerwearUpperLegs)
+                {
+                    if (!equippedItems.Contains(i))
+                    {
+                        equippedItems.Add(i);
+                    }
+                }
 
-                        if (weaponHistory != null)
+                foreach (var item in equippedItems)
+                {
+                    if (item != null)
+                    {
+                        var killHistory = item.GetMonsterKillHistory();
+
+                        var totalKills = 0;
+
+                        foreach (var k in killHistory)
                         {
-                            if (weaponHistory.Count == 0)
-                            {
-                                playerCaster.AddMonsterToKillHistory(CreatureType.Value, 1);
+                            totalKills += k.Value;
+                        }
 
+                        if (killHistory != null && totalKills < 500)
+                        {
+                            if (killHistory.Count == 0)
+                            {
+                                item.AddMonsterToKillHistory(CreatureType.Value, 1);
                                 return;
                             }
-
-                            if (weaponHistory.ContainsKey(CreatureType.Value))
+                            if (killHistory.ContainsKey(CreatureType.Value))
                             {
-                                var kills = weaponHistory[CreatureType.Value];
-
-                                playerCaster.RemoveMonsterFromKillHistory(CreatureType.Value);
-                                playerCaster.AddMonsterToKillHistory(CreatureType.Value, kills + 1);
-
+                                var kills = killHistory[CreatureType.Value];
+                                item.RemoveMonsterFromKillHistory(CreatureType.Value);
+                                item.AddMonsterToKillHistory(CreatureType.Value, kills + 1);
                                 return;
                             }
                             else
                             {
-                                playerCaster.AddMonsterToKillHistory(CreatureType.Value, 1);
-
+                                item.AddMonsterToKillHistory(CreatureType.Value, 1);
                                 return;
                             }
                         }
                     }
                 }
+
+                /*if (playerMainWeapon != null && playerMainWeapon.ItemLevel != playerMainWeapon.MaxLevel)
+                {
+                    var weaponHistory = playerMainWeapon.GetMonsterKillHistory();
+
+                    if (weaponHistory != null)
+                    {
+                        if (weaponHistory.Count == 0)
+                        {
+                            playerMainWeapon.AddMonsterToKillHistory(CreatureType.Value, 1);
+
+                            return;
+                        }
+
+                        if (weaponHistory.ContainsKey(CreatureType.Value))
+                        {
+                            var kills = weaponHistory[CreatureType.Value];
+
+                            playerMainWeapon.RemoveMonsterFromKillHistory(CreatureType.Value);
+                            playerMainWeapon.AddMonsterToKillHistory(CreatureType.Value, kills + 1);
+
+                            return;
+                        }
+                        else
+                        {
+                            playerMainWeapon.AddMonsterToKillHistory(CreatureType.Value, 1);
+
+                            return;
+                        }
+                    }
+                }
+                if (playerOffhandWeapon != null && playerOffhandWeapon.ItemType == ItemType.MeleeWeapon && playerOffhandWeapon.ItemLevel != playerOffhandWeapon.MaxLevel)
+                {
+                    var weaponHistory = playerOffhandWeapon.GetMonsterKillHistory();
+
+                    if (weaponHistory != null)
+                    {
+                        if (weaponHistory.Count == 0)
+                        {
+                            playerOffhandWeapon.AddMonsterToKillHistory(CreatureType.Value, 1);
+
+                            return;
+                        }
+
+                        if (weaponHistory.ContainsKey(CreatureType.Value))
+                        {
+                            var kills = weaponHistory[CreatureType.Value];
+
+                            playerOffhandWeapon.RemoveMonsterFromKillHistory(CreatureType.Value);
+                            playerOffhandWeapon.AddMonsterToKillHistory(CreatureType.Value, kills + 1);
+
+                            return;
+                        }
+                        else
+                        {
+                            playerOffhandWeapon.AddMonsterToKillHistory(CreatureType.Value, 1);
+
+                            return;
+                        }
+                    }
+                }
+                if (playerCaster != null && playerCaster.ItemLevel != playerCaster.MaxLevel)
+                {
+                    var weaponHistory = playerCaster.GetMonsterKillHistory();
+
+                    if (weaponHistory != null)
+                    {
+                        if (weaponHistory.Count == 0)
+                        {
+                            playerCaster.AddMonsterToKillHistory(CreatureType.Value, 1);
+
+                            return;
+                        }
+
+                        if (weaponHistory.ContainsKey(CreatureType.Value))
+                        {
+                            var kills = weaponHistory[CreatureType.Value];
+
+                            playerCaster.RemoveMonsterFromKillHistory(CreatureType.Value);
+                            playerCaster.AddMonsterToKillHistory(CreatureType.Value, kills + 1);
+
+                            return;
+                        }
+                        else
+                        {
+                            playerCaster.AddMonsterToKillHistory(CreatureType.Value, 1);
+
+                            return;
+                        }
+                    }
+                }*/
             }
         }
 
