@@ -655,6 +655,8 @@ namespace ACE.Entity.Enum.Properties
         WeaponBaseDamage = 9026,
         BaseArmorLevel   = 9027,
 
+        MonsterKillLevel = 9028,
+
         // AC Realms property IDs are reserved start with 42000-42999
         //
         [ServerOnly]

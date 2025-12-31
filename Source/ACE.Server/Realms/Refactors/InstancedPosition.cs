@@ -86,7 +86,7 @@ namespace ACE.Server.Realms
                 {
                     foreach (var p in players)
                     {
-                        if (!playerList.Contains(p))
+                        if (!playerList.Contains(p) && p.Location.Instance == Instance)
                             playerList.Add(p);
                     }
                 }

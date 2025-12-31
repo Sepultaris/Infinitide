@@ -264,64 +264,7 @@ namespace ACE.Server.Command.Handlers
             }
 
             CreatureVital maxHealth = new CreatureVital(player, PropertyAttribute2nd.MaxHealth);
-
-            /*if (parameters[0].ToLowerInvariant().Equals("vitality"))
-            {
-                if (maxHealth.Ranks < 5000)
-                {
-                    for (int j = 0; j < result; j++)
-                    {
-                        if (10000000L > player.AvailableLuminance)
-                        {
-                            player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxHealth]));
-                            player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxStamina]));
-                            player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxMana]));
-                            ChatPacket.SendServerMessage(session, string.Format("Your Vitality has been increased by {0}.", j), ChatMessageType.Broadcast);
-                            ChatPacket.SendServerMessage(session, "Not enough Luminance for remaining points, you require 10 million (10,000,000) Luminance per point.", ChatMessageType.Broadcast);
-                            return;
-                        }
-                        if (!player.SpendLuminance(10000000L))
-                        {
-                            player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxHealth]));
-                            player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxStamina]));
-                            player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxMana]));
-                            ChatPacket.SendServerMessage(session, string.Format("Your Vitality has been increased by {0}.", j), ChatMessageType.Broadcast);
-                            ChatPacket.SendServerMessage(session, "Not enough Luminance for remaining points, you require 10 million (10,000,000) Luminance per point.", ChatMessageType.Broadcast);
-                            return;
-                        }
-                        CreatureVital creatureVital1 = new CreatureVital(player, PropertyAttribute2nd.MaxHealth);
-                        creatureVital1.Ranks = Math.Clamp(creatureVital1.Ranks + 1, 1u, uint.MaxValue);
-                        player.UpdateVital(creatureVital1, creatureVital1.MaxValue);
-                        CreatureVital creatureVital2 = new CreatureVital(player, PropertyAttribute2nd.Health);
-                        creatureVital2.Ranks = Math.Clamp(creatureVital2.Ranks + 1, 1u, uint.MaxValue);
-                        player.UpdateVital(creatureVital2, creatureVital2.MaxValue);
-                        CreatureVital creatureVital3 = new CreatureVital(player, PropertyAttribute2nd.MaxStamina);
-                        creatureVital3.Ranks = Math.Clamp(creatureVital3.Ranks + 1, 1u, uint.MaxValue);
-                        player.UpdateVital(creatureVital3, creatureVital3.MaxValue);
-                        CreatureVital creatureVital4 = new CreatureVital(player, PropertyAttribute2nd.Stamina);
-                        creatureVital4.Ranks = Math.Clamp(creatureVital4.Ranks + 1, 1u, uint.MaxValue);
-                        player.UpdateVital(creatureVital4, creatureVital4.MaxValue);
-                        CreatureVital creatureVital5 = new CreatureVital(player, PropertyAttribute2nd.MaxMana);
-                        creatureVital5.Ranks = Math.Clamp(creatureVital5.Ranks + 1, 1u, uint.MaxValue);
-                        player.UpdateVital(creatureVital5, creatureVital5.MaxValue);
-                        CreatureVital creatureVital6 = new CreatureVital(player, PropertyAttribute2nd.Mana);
-                        creatureVital6.Ranks = Math.Clamp(creatureVital6.Ranks + 1, 1u, uint.MaxValue);
-                        player.UpdateVital(creatureVital6, creatureVital6.MaxValue);
-                    }
-                    player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxHealth]));
-                    player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxStamina]));
-                    player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxMana]));
-                    player.Session.Network.EnqueueSend(new GameMessagePrivateUpdateVital(player, player.Vitals[PropertyAttribute2nd.MaxStamina]));
-                    return;
-                }
-
-                if (maxHealth.Ranks >= 5000)
-                {
-                    ChatPacket.SendServerMessage(session, "You have reached Maximum Vitality", ChatMessageType.Broadcast);
-                    return;
-                }
-
-            }*/
+            
             if (parameters[0].Equals("mana"))
             {
                 for (int k = 0; k < result; k++)
@@ -566,7 +509,7 @@ namespace ACE.Server.Command.Handlers
             long baseCost = 10000000000;
             double growthRate = 1.00110; //1.00035
 
-            long xpCost = (long)(baseCost * Math.Pow(growthRate, level - 1));
+            long xpCost = (long)(baseCost * Math.Pow(growthRate, level - 1) * PropertyManager.GetDouble("AttributeRaiseCostMultiplier").Item);
             return xpCost;
         }
 
@@ -575,7 +518,7 @@ namespace ACE.Server.Command.Handlers
             long baseCost = 1200000; 
             double growthRate = 1.035; 
 
-            long xpCost = (long)(baseCost * Math.Pow(growthRate, level - 1));
+            long xpCost = (long)(baseCost * Math.Pow(growthRate, level - 1) * PropertyManager.GetDouble("LumRaiseCostMultiplier").Item);
             return xpCost;
         }
 

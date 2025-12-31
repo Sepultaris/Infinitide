@@ -6,6 +6,7 @@ using ACE.Entity;
 using ACE.Entity.Enum;
 using ACE.Entity.Enum.Properties;
 using ACE.Entity.Models;
+using ACE.Server.Managers;
 using ACE.Server.Network;
 using ACE.Server.Network.GameMessages.Messages;
 using ACE.Server.Realms;
@@ -136,7 +137,7 @@ namespace ACE.Server.InfinitideMods
 
         public static long GetXPForLevel(int level)
         {
-            long xp = (long)(4000000000 * Math.Pow(1.001, level - 275));
+            long xp = (long)(4000000000 * Math.Pow(1.001, level - 275) * PropertyManager.GetDouble("XpForLevelMultiplier").Item);
             return xp;
         }
 

@@ -91,34 +91,6 @@ namespace ACE.Server.WorldObjects
                 }
             }
 
-            // handle casters with built-in spells
-            //if (sourceItemIsEquipped)
-            //{
-            //    if (sourceItem.SpellDID != null)
-            //    {
-            //        // check activation requirements
-            //        var result = sourceItem.CheckUseRequirements(this);
-            //        if (!result.Success)
-            //        {
-            //            if (result.Message != null)
-            //                Session.Network.EnqueueSend(result.Message);
-
-            //            SendUseDoneEvent();
-            //        }
-            //        else
-            //        {
-            //            HandleActionCastTargetedSpell(targetObjectGuid, sourceItem.SpellDID ?? 0, true);
-            //            return;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        SendUseDoneEvent();
-            //    }
-
-            //    return;
-            //}
-
             if (IsTrading)
             {
                 if (sourceItem.IsBeingTradedOrContainsItemBeingTraded(ItemsInTradeWindow))

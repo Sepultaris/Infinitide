@@ -248,9 +248,7 @@ namespace ACE.Server.Factories
 
                         if (obj.ItemType == ItemType.MeleeWeapon || obj.WeaponSkill == Skill.HeavyWeapons || obj.WeaponSkill == Skill.LightWeapons || obj.WeaponSkill == Skill.FinesseWeapons)
                         {
-                            var maxlevel = 100;
-                            var xpToLevel = InfinitidePlayer.GetXPForLevel(instanceLevel + 1);
-                            var basexp = (long)(1000000000 * Math.Pow(1.0005, instanceLevel - 275) / 3) + xpToLevel / 10;
+                            obj.MonsterKillLevel = 0;
                             var newName = obj.Name + $" ({instanceLevel})";
 
                             obj.Name = newName;
@@ -267,9 +265,6 @@ namespace ACE.Server.Factories
                                 obj.SetProperty(PropertyString.Name, newGBName);
                             }
                             
-                            obj.ItemMaxLevel = maxlevel;
-                            obj.SetProperty(PropertyInt.ItemXpStyle, 1);
-                            obj.ItemBaseXp = basexp;
                             obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
                             obj.WieldRequirements2 = WieldRequirement.Level;
                             obj.SetProperty(PropertyInt.WieldRequirements2, 7);
@@ -279,16 +274,11 @@ namespace ACE.Server.Factories
 
                         if (obj.ItemType == ItemType.MissileWeapon || obj.WeaponSkill == Skill.MissileWeapons)
                         {
-                            var maxlevel = 100;
-                            var xpToLevel = InfinitidePlayer.GetXPForLevel(instanceLevel + 1);
-                            var basexp = (long)(1000000000 * Math.Pow(1.0005, instanceLevel - 275) / 3) + xpToLevel / 10;
+                            obj.MonsterKillLevel = 0;
                             var newName = obj.Name + $" ({instanceLevel})";
 
                             obj.Name = newName;
                             obj.SetProperty(PropertyString.Name, newName);
-                            obj.ItemMaxLevel = maxlevel;
-                            obj.SetProperty(PropertyInt.ItemXpStyle, 1);
-                            obj.ItemBaseXp = basexp;
                             obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
                             obj.WieldRequirements2 = WieldRequirement.Level;
                             obj.SetProperty(PropertyInt.WieldRequirements2, 7);
@@ -298,16 +288,11 @@ namespace ACE.Server.Factories
 
                         if (obj.ItemType == ItemType.Caster || obj.WeaponSkill == Skill.WarMagic || obj.WeaponSkill == Skill.VoidMagic)
                         {
-                            var maxlevel = 100;
-                            var xpToLevel = InfinitidePlayer.GetXPForLevel(instanceLevel + 1);
-                            var basexp = (long)(1000000000 * Math.Pow(1.0005, instanceLevel - 275) / 3) + xpToLevel / 10;
+                            obj.MonsterKillLevel = 0;
                             var newName = obj.Name + $" ({instanceLevel})";
 
                             obj.Name = newName;
                             obj.SetProperty(PropertyString.Name, newName);
-                            obj.ItemMaxLevel = maxlevel;
-                            obj.SetProperty(PropertyInt.ItemXpStyle, 1);
-                            obj.ItemBaseXp = basexp;
                             obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
                             obj.WieldRequirements2 = WieldRequirement.Level;
                             obj.SetProperty(PropertyInt.WieldRequirements2, 7);
@@ -356,13 +341,8 @@ namespace ACE.Server.Factories
                                     obj.GearCritDamage = gearRating1;
                                     obj.GearCritDamageResist = gearRating2;
 
-                                    var maxlevel = 100;
-                                    var xpToLevel = InfinitidePlayer.GetXPForLevel(instanceLevel + 1);
-                                    var basexp = (long)(1000000000 * Math.Pow(1.0005, instanceLevel - 275) / 3) + xpToLevel / 10;
+                                    obj.MonsterKillLevel = 0;
 
-                                    obj.ItemMaxLevel = maxlevel;
-                                    obj.SetProperty(PropertyInt.ItemXpStyle, 1);
-                                    obj.ItemBaseXp = basexp;
                                     obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
                                 }
                                 else
@@ -392,13 +372,8 @@ namespace ACE.Server.Factories
                                     var curve = armorLevel;
                                     obj.ArmorLevel = curve;
                                 }
-                                var maxlevel = 100;
-                                var xpToLevel = InfinitidePlayer.GetXPForLevel(instanceLevel + 1);
-                                var basexp = (long)(1000000000 * Math.Pow(1.0005, instanceLevel - 275) / 3) + xpToLevel / 10;
+                                obj.MonsterKillLevel = 0;
 
-                                obj.ItemMaxLevel = maxlevel;
-                                obj.SetProperty(PropertyInt.ItemXpStyle, 1);
-                                obj.ItemBaseXp = basexp;
                                 obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
                             }
 
@@ -483,6 +458,8 @@ namespace ACE.Server.Factories
                             obj.GearCrit = petDeviceRating7;
                             obj.GearCritResist = petDeviceRating8;
                         }
+
+                        obj.IsLootRolled = true;
                     }
 
                     var gbAdapterRoll = ThreadSafeRandom.Next(0.00f, 1.00f);

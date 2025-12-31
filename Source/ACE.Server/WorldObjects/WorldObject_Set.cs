@@ -63,9 +63,12 @@ namespace ACE.Server.WorldObjects
         {
             get
             {
-                if (!HasItemLevel) return null;
-
-                return ExperienceSystem.ItemTotalXPToLevel((ulong)ItemTotalXp.Value, (ulong)ItemBaseXp.Value, ItemMaxLevel.Value, ItemXpStyle.Value);
+                if (MonsterKillLevel != null)
+                    return MonsterKillLevel;
+                if (ItemBaseXp != null)
+                    return ExperienceSystem.ItemTotalXPToLevel((ulong)ItemTotalXp.Value, (ulong)ItemBaseXp.Value, ItemMaxLevel.Value, ItemXpStyle.Value);
+                else
+                    return null;
             }
         }
 

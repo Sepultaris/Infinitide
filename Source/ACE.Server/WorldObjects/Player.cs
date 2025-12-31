@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Numerics;
-
-using log4net;
-
 using ACE.Common;
 using ACE.Database;
 using ACE.Database.Models.Auth;
@@ -24,11 +18,15 @@ using ACE.Server.Network.Structure;
 using ACE.Server.Physics;
 using ACE.Server.Physics.Animation;
 using ACE.Server.Physics.Common;
+using ACE.Server.Realms;
 using ACE.Server.WorldObjects.Managers;
-
+using log4net;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using Character = ACE.Database.Models.Shard.Character;
 using MotionTable = ACE.DatLoader.FileTypes.MotionTable;
-using ACE.Server.Realms;
 
 namespace ACE.Server.WorldObjects
 {
@@ -1156,6 +1154,249 @@ namespace ACE.Server.WorldObjects
                 innerChain.EnqueueChain();
             });
             actionChain.EnqueueChain();
+        }
+
+        public void ApplyDamageAndArmorBonuses(WorldObject item, int levelsGained)
+        {
+            var itemLevel = item.MonsterKillLevel;
+
+            if (itemLevel == null)
+                itemLevel = 0;
+
+            var bonusMultiplier = (float)(0.0025f * itemLevel);
+
+            if (item.MonsterKillLevel > 0 && item.Bonded != BondedStatus.Bonded && item.Attuned != AttunedStatus.Attuned)
+            {
+                item.Bonded = BondedStatus.Bonded;
+                item.Attuned = AttunedStatus.Attuned;
+            }
+
+            for (int i = 0; i < levelsGained; i++)
+            {
+                if (item is MeleeWeapon meleeWeapon)
+                {
+                    if (meleeWeapon.WeaponBaseDamage == null)
+                        meleeWeapon.WeaponBaseDamage = meleeWeapon.Damage;
+
+                    int baseWeaponDamage = (int)meleeWeapon.WeaponBaseDamage.Value;
+
+                    int maxBonus = (int)(baseWeaponDamage * 0.15);
+
+                    float bonusPerLevel = maxBonus / 100f;
+
+                    int bonusForCurrentItemLevel = (int)(bonusPerLevel * meleeWeapon.MonsterKillLevel);
+
+                    int numberOfIronTinks = 0;
+
+                    if (meleeWeapon.TinkerLog != null)
+                    {
+                        int targetNumber = 61;
+
+                        // Split the string by commas and count occurrences of targetNumber
+                        numberOfIronTinks = meleeWeapon.TinkerLog.Split(',').Count(num => int.TryParse(num, out int n) && n == targetNumber);
+                    }
+
+                    int damageFromIronTinks = numberOfIronTinks * 1;
+
+                    for (int j = 0; j < levelsGained; j++)
+                    {
+                        if (bonusForCurrentItemLevel > maxBonus)
+                            bonusForCurrentItemLevel = maxBonus;
+
+                        meleeWeapon.Damage = meleeWeapon.WeaponBaseDamage + bonusForCurrentItemLevel + damageFromIronTinks;
+                    }
+                }
+                else if (item is MissileLauncher missileLauncher)
+                {
+                    if (missileLauncher.WeaponBaseDamageMod == null)
+                        missileLauncher.WeaponBaseDamageMod = missileLauncher.DamageMod;
+
+                    float baseWeaponDamage = (float)missileLauncher.WeaponBaseDamageMod.Value;
+
+                    float maxBonus = (float)(baseWeaponDamage * 0.15);
+
+                    float bonusPerLevel = maxBonus / 100f;
+
+                    float bonusForCurrentItemLevel = (float)(bonusPerLevel * missileLauncher.MonsterKillLevel);
+
+                    int numberOfMahoganyTinks = 0;
+
+                    if (missileLauncher.TinkerLog != null)
+                    {
+                        int targetNumber = 74;
+
+                        // Split the string by commas and count occurrences of targetNumber
+                        numberOfMahoganyTinks = missileLauncher.TinkerLog.Split(',').Count(num => int.TryParse(num, out int n) && n == targetNumber);
+                    }
+
+                    float damageFromMahoganyTinks = 0.04f * numberOfMahoganyTinks;
+
+                    for (int j = 0; j < levelsGained; j++)
+                    {
+                        if (bonusForCurrentItemLevel > maxBonus)
+                            bonusForCurrentItemLevel = maxBonus;
+
+                        missileLauncher.DamageMod = missileLauncher.WeaponBaseDamageMod + bonusForCurrentItemLevel + damageFromMahoganyTinks;
+                    }
+                }
+                else if (item is Caster caster)
+                {
+                    if (caster.WeaponBaseDamageMod == null)
+                        caster.WeaponBaseDamageMod = caster.ElementalDamageMod;
+
+                    float baseWeaponDamage = (float)caster.WeaponBaseDamageMod.Value;
+
+                    float maxBonus = (float)(baseWeaponDamage * 0.015);
+
+                    float bonusPerLevel = maxBonus / 100f;
+
+                    float bonusForCurrentItemLevel = (float)(bonusPerLevel * caster.MonsterKillLevel);
+
+                    int numberOfGreenGarnetTinks = 0;
+
+                    if (caster.TinkerLog != null)
+                    {
+                        int targetNumber = 23;
+
+                        // Split the string by commas and count occurrences of targetNumber
+                        numberOfGreenGarnetTinks = caster.TinkerLog.Split(',').Count(num => int.TryParse(num, out int n) && n == targetNumber);
+                    }
+
+                    float damageFromGreenGarnetTinks = 0.01f * numberOfGreenGarnetTinks;
+
+                    for (int j = 0; j < levelsGained; j++)
+                    {
+                        if (bonusForCurrentItemLevel > maxBonus)
+                            bonusForCurrentItemLevel = maxBonus;
+
+                        caster.ElementalDamageMod = caster.WeaponBaseDamageMod + bonusForCurrentItemLevel + damageFromGreenGarnetTinks;
+                    }
+                }
+                else if (item is Clothing clothing)
+                {
+                    if (clothing.ArmorLevel == null)
+                        clothing.ArmorLevel = clothing.BaseArmorLevel;
+
+                    if (clothing.BaseArmorLevel != null)
+                    {
+                        int baseArmorLevel = (int)clothing.BaseArmorLevel;
+
+                        int maxBonus = (int)(baseArmorLevel * 0.15);
+
+                        float bonusPerLevel = maxBonus / 100f;
+
+                        int bonusForCurrentItemLevel = (int)(bonusPerLevel * clothing.MonsterKillLevel);
+
+                        int numberOfSteelTinks = 0;
+
+                        if (clothing.TinkerLog != null)
+                        {
+                            if (clothing.TinkerLog.Count() > 0)
+                            {
+                                int targetNumber = 64;
+
+                                numberOfSteelTinks = clothing.TinkerLog.Split(',').Count(num => int.TryParse(num, out int n) && n == targetNumber);
+                            }
+                        }
+
+                        int armorFromSteelTinks = numberOfSteelTinks * 20;
+
+                        for (int j = 0; j < levelsGained; j++)
+                        {
+                            if (bonusForCurrentItemLevel > maxBonus)
+                                bonusForCurrentItemLevel = maxBonus;
+
+                            clothing.ArmorLevel = clothing.BaseArmorLevel + bonusForCurrentItemLevel + armorFromSteelTinks;
+                        }
+                    }
+                }
+            }
+        }
+
+        public void ApplyRend(WorldObject item)
+        {
+            var damageType = item.GetProperty(PropertyInt.DamageType);
+
+            if (item.ImbuedEffect == 0)
+            {
+                if (damageType == 1)
+                {
+                    item.SetProperty(PropertyInt.ImbuedEffect, 8);
+                    item.SetProperty(PropertyDataId.IconUnderlay, 0x600335C);
+                    var underlayUpdate = new GameMessagePrivateUpdateDataID(item, PropertyDataId.IconUnderlay, IconUnderlayId ?? 100676444);
+                    Session.Network.EnqueueSend(underlayUpdate);
+                }
+                if (damageType == 2)
+                {
+                    item.SetProperty(PropertyInt.ImbuedEffect, 16);
+                    item.SetProperty(PropertyDataId.IconUnderlay, 0x600335B);
+                    var underlayUpdate = new GameMessagePrivateUpdateDataID(item, PropertyDataId.IconUnderlay, IconUnderlayId ?? 100676443);
+                    Session.Network.EnqueueSend(underlayUpdate);
+                }
+                if (damageType == 4)
+                {
+                    item.SetProperty(PropertyInt.ImbuedEffect, 32);
+                    item.SetProperty(PropertyDataId.IconUnderlay, 0x600335A);
+                    var underlayUpdate = new GameMessagePrivateUpdateDataID(item, PropertyDataId.IconUnderlay, IconUnderlayId ?? 100676442);
+                    Session.Network.EnqueueSend(underlayUpdate);
+                }
+                if (damageType == 8)
+                {
+                    item.SetProperty(PropertyInt.ImbuedEffect, 128);
+                    item.SetProperty(PropertyDataId.IconUnderlay, 0x6003353);
+                    var underlayUpdate = new GameMessagePrivateUpdateDataID(item, PropertyDataId.IconUnderlay, IconUnderlayId ?? 100676435);
+                    Session.Network.EnqueueSend(underlayUpdate);
+                }
+                if (damageType == 16)
+                {
+                    item.SetProperty(PropertyInt.ImbuedEffect, 512);
+                    item.SetProperty(PropertyDataId.IconUnderlay, 0x6003359);
+                    var underlayUpdate = new GameMessagePrivateUpdateDataID(item, PropertyDataId.IconUnderlay, IconUnderlayId ?? 100676440);
+                    Session.Network.EnqueueSend(underlayUpdate);
+                }
+                if (damageType == 32)
+                {
+                    item.SetProperty(PropertyInt.ImbuedEffect, 64);
+                    item.SetProperty(PropertyDataId.IconUnderlay, 0x6003355);
+                    var underlayUpdate = new GameMessagePrivateUpdateDataID(item, PropertyDataId.IconUnderlay, IconUnderlayId ?? 100676437);
+                    Session.Network.EnqueueSend(underlayUpdate);
+                }
+                if (damageType == 64)
+                {
+                    item.SetProperty(PropertyInt.ImbuedEffect, 256);
+                    item.SetProperty(PropertyDataId.IconUnderlay, 0x6003354);
+                    var underlayUpdate = new GameMessagePrivateUpdateDataID(item, PropertyDataId.IconUnderlay, IconUnderlayId ?? 100676436);
+                    Session.Network.EnqueueSend(underlayUpdate);
+                }
+                if (damageType == 1024)
+                {
+                    item.SetProperty(PropertyInt.ImbuedEffect, 16384);
+                }
+            }
+        }
+
+        public void ApplySlayer(WorldObject item)
+        {
+            if (item.MonsterKillLevel == 100)
+            {
+                var monsterKillHistory = item.GetMonsterKillHistory();
+
+                if (monsterKillHistory.Count > 0)
+                {
+                    int maxValue = monsterKillHistory.Values.Max();
+
+                    var maxEntries = monsterKillHistory.Where(pair => pair.Value == maxValue);
+
+                    foreach (var entry in maxEntries)
+                    {
+                        item.SlayerCreatureType = (CreatureType?)entry.Key;
+                        item.SlayerDamageBonus = 1.25f;
+
+                        var updateSlayerBonus = new GameMessagePrivateUpdatePropertyFloat(item, PropertyFloat.SlayerDamageBonus, 1.25f);
+                        Session.Network.EnqueueSend(updateSlayerBonus);
+                    }
+                }
+            }
         }
     }
 }

@@ -43,13 +43,16 @@ namespace ACE.Server.WorldObjects
             }
 
             var position = Location.AsLocalPosition();
-            bool inSetLandblock = RealmManager.Peripherals.DungeonSets.IncludedInSet(position, "default");
+            bool inSetLandblock = RealmManager.Peripherals.DungeonSets.IncludedInSet(position, "ShatteredDawn");
             var mobStrengthScaleFactor = PropertyManager.GetDouble("MobStrengthScaleFactor").Item;
             var mobEnduranceScaleFactor = PropertyManager.GetDouble("MobEnduranceScaleFactor").Item;
             var mobCoordinationScaleFactor = PropertyManager.GetDouble("MobCoordinationScaleFactor").Item;
             var mobQuicknessScaleFactor = PropertyManager.GetDouble("MobQuicknessScaleFactor").Item;
             var mobFocusScaleFactor = PropertyManager.GetDouble("MobFocusScaleFactor").Item;
             var mobSelfScaleFactor = PropertyManager.GetDouble("MobSelfScaleFactor").Item;
+            var mobHealthScaleFactor = PropertyManager.GetDouble("MobHealthScaleFactor").Item;
+            var mobStaminaScaleFactor = PropertyManager.GetDouble("MobStaminaScaleFactor").Item;
+            var mobManaScaleFactor = PropertyManager.GetDouble("MobManaScaleFactor").Item;
 
             if (inSetLandblock)
             {
@@ -68,18 +71,18 @@ namespace ACE.Server.WorldObjects
                     uint self = (uint)((uint)Math.Max(instanceLevel - 275, 0) * mobFocusScaleFactor);
                     uint focus = (uint)((uint)Math.Max(instanceLevel - 275, 0) * mobSelfScaleFactor);
 
-                    uint newHealthValue = baseMaxHealth + ((uint)Math.Max(instanceLevel - 275, 0));
-                    uint newStaminaValue = baseMaxStamina + ((uint)Math.Max(instanceLevel - 275, 0));
-                    uint newManaValue = baseMaxMana + ((uint)Math.Max(instanceLevel - 275, 0));
+                    uint newHealthValue = (uint)(baseMaxHealth + (uint)Math.Max(instanceLevel - 275, 0));
+                    uint newStaminaValue = (uint)(baseMaxStamina + (uint)Math.Max(instanceLevel - 275, 0));
+                    uint newManaValue = (uint)(baseMaxMana + (uint)Math.Max(instanceLevel - 275, 0));
 
                     if (Vitals.ContainsKey(PropertyAttribute2nd.MaxHealth))
-                        Vitals[PropertyAttribute2nd.MaxHealth].Current = newHealthValue;
+                        Vitals[PropertyAttribute2nd.MaxHealth].StartingValue = (uint)(newHealthValue * mobHealthScaleFactor);
 
                     if (Vitals.ContainsKey(PropertyAttribute2nd.MaxStamina))
-                        Vitals[PropertyAttribute2nd.MaxStamina].Current = newStaminaValue;
+                        Vitals[PropertyAttribute2nd.MaxStamina].StartingValue = (uint)(newStaminaValue * mobStaminaScaleFactor);
 
                     if (Vitals.ContainsKey(PropertyAttribute2nd.MaxMana))
-                        Vitals[PropertyAttribute2nd.MaxMana].Current = newManaValue;
+                        Vitals[PropertyAttribute2nd.MaxMana].StartingValue = (uint)(newManaValue * mobManaScaleFactor);
 
                     if (Attributes.ContainsKey(PropertyAttribute.Strength))
                         Attributes[PropertyAttribute.Strength].Ranks = strength;
@@ -135,9 +138,9 @@ namespace ACE.Server.WorldObjects
                     uint self = (uint)((uint)((uint)Math.Max(instanceLevel - 275, 0) * 0.59f) * 0.92f);
                     uint focus = (uint)((uint)((uint)Math.Max(instanceLevel - 275, 0) * 0.59f) * 0.92f);
 
-                    uint newHealthValue = (uint)(baseMaxHealth + ((uint)Math.Max(instanceLevel - 275, 0)) * 0.92f);
-                    uint newStaminaValue = (uint)(baseMaxStamina + ((uint)Math.Max(instanceLevel - 275, 0)) * 0.92f);
-                    uint newManaValue = (uint)(baseMaxMana + ((uint)Math.Max(instanceLevel - 275, 0)) * 0.92f);
+                    uint newHealthValue = baseMaxHealth + (uint)Math.Max(instanceLevel - 275, 0);
+                    uint newStaminaValue = baseMaxStamina + (uint)Math.Max(instanceLevel - 275, 0);
+                    uint newManaValue = baseMaxMana + (uint)Math.Max(instanceLevel - 275, 0);
 
                     if (Vitals.ContainsKey(PropertyAttribute2nd.MaxHealth))
                         Vitals[PropertyAttribute2nd.MaxHealth].Current = newHealthValue;

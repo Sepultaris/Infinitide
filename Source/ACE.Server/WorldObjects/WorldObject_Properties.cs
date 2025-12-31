@@ -3304,5 +3304,17 @@ Report this to the AC Realms developer.");
             get => GetProperty(PropertyInt.BaseArmorLevel);
             set { if (!value.HasValue) RemoveProperty(PropertyInt.BaseArmorLevel); else SetProperty(PropertyInt.BaseArmorLevel, value.Value); }
         }
+
+        public int? MonsterKillLevel
+        {
+            get => GetProperty(PropertyInt.MonsterKillLevel);
+            set { if (!value.HasValue) RemoveProperty(PropertyInt.MonsterKillLevel); else SetProperty(PropertyInt.MonsterKillLevel, value.Value); }
+        }
+
+        public bool IsLootRolled
+        {
+            get => GetProperty(PropertyBool.IsLootRolled) ?? false;
+            set { if (!value) RemoveProperty(PropertyBool.IsLootRolled); else SetProperty(PropertyBool.IsLootRolled, value); }
+        }
     }
 }

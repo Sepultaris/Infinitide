@@ -148,12 +148,12 @@ namespace ACE.Server.WorldObjects
 
                 if (topDamagerPlayer != null)
                 {
-                    UpdateGearCreatureKillHistory(topDamagerPlayer);
+                    UpdateGearCreatureKillHistory(topDamagerPlayer, this);
                 }
             }
         }
 
-        public void UpdateGearCreatureKillHistory(Player player)
+        public void UpdateGearCreatureKillHistory(Player player, Creature creature)
         {
             if (player != null)
             {
@@ -243,10 +243,16 @@ namespace ACE.Server.WorldObjects
                     }
                 }
 
+                if (equippedItems.Count == 0)
+                    return;
+
                 foreach (var item in equippedItems)
                 {
                     if (item != null)
                     {
+                        if (!item.IsLootRolled)
+                            continue;
+
                         var killHistory = item.GetMonsterKillHistory();
 
                         var totalKills = 0;
@@ -256,119 +262,55 @@ namespace ACE.Server.WorldObjects
                             totalKills += k.Value;
                         }
 
-                        if (killHistory != null && totalKills < 500)
+                        if (killHistory != null && totalKills < 500 && creature.Level >= player.Level - 100 && creature.Level <= player.Level + 400)
                         {
                             if (killHistory.Count == 0)
                             {
                                 item.AddMonsterToKillHistory(CreatureType.Value, 1);
-                                return;
+                                player.ApplyRend(item);
+                                continue;
                             }
+
                             if (killHistory.ContainsKey(CreatureType.Value))
                             {
                                 var kills = killHistory[CreatureType.Value];
                                 item.RemoveMonsterFromKillHistory(CreatureType.Value);
                                 item.AddMonsterToKillHistory(CreatureType.Value, kills + 1);
-                                return;
+                                totalKills++;
                             }
-                            else
+                            else if (!killHistory.ContainsKey(CreatureType.Value))
                             {
                                 item.AddMonsterToKillHistory(CreatureType.Value, 1);
-                                return;
+                                totalKills++;
+                            }
+
+                            if (item.MonsterKillLevel == null)
+                                item.MonsterKillLevel = 0;
+
+                            var oldItemLevel = item.MonsterKillLevel.Value;
+                            var newItemLevel = totalKills / 5;
+
+                            item.MonsterKillLevel = newItemLevel;
+                            item.SetProperty(PropertyInt.MonsterKillLevel, newItemLevel);
+
+                            if (newItemLevel > oldItemLevel)
+                            {
+                                player.ApplyDamageAndArmorBonuses(item, (int)(newItemLevel - oldItemLevel));
+                                oldItemLevel = newItemLevel;
+                                player.ApplyVisualEffects(PlayScript.AetheriaLevelUp);
+                                player.SendMessage($"Your {item.Name} has gained a level and is now level {item.ItemLevel}");
+                            }
+
+                            if (item.ItemType == ItemType.MissileWeapon || item.ItemType == ItemType.MeleeWeapon || item.ItemType == ItemType.Caster)
+                            {
+                                if (newItemLevel == 100)
+                                    player.ApplySlayer(item);
                             }
                         }
                     }
                 }
 
-                /*if (playerMainWeapon != null && playerMainWeapon.ItemLevel != playerMainWeapon.MaxLevel)
-                {
-                    var weaponHistory = playerMainWeapon.GetMonsterKillHistory();
-
-                    if (weaponHistory != null)
-                    {
-                        if (weaponHistory.Count == 0)
-                        {
-                            playerMainWeapon.AddMonsterToKillHistory(CreatureType.Value, 1);
-
-                            return;
-                        }
-
-                        if (weaponHistory.ContainsKey(CreatureType.Value))
-                        {
-                            var kills = weaponHistory[CreatureType.Value];
-
-                            playerMainWeapon.RemoveMonsterFromKillHistory(CreatureType.Value);
-                            playerMainWeapon.AddMonsterToKillHistory(CreatureType.Value, kills + 1);
-
-                            return;
-                        }
-                        else
-                        {
-                            playerMainWeapon.AddMonsterToKillHistory(CreatureType.Value, 1);
-
-                            return;
-                        }
-                    }
-                }
-                if (playerOffhandWeapon != null && playerOffhandWeapon.ItemType == ItemType.MeleeWeapon && playerOffhandWeapon.ItemLevel != playerOffhandWeapon.MaxLevel)
-                {
-                    var weaponHistory = playerOffhandWeapon.GetMonsterKillHistory();
-
-                    if (weaponHistory != null)
-                    {
-                        if (weaponHistory.Count == 0)
-                        {
-                            playerOffhandWeapon.AddMonsterToKillHistory(CreatureType.Value, 1);
-
-                            return;
-                        }
-
-                        if (weaponHistory.ContainsKey(CreatureType.Value))
-                        {
-                            var kills = weaponHistory[CreatureType.Value];
-
-                            playerOffhandWeapon.RemoveMonsterFromKillHistory(CreatureType.Value);
-                            playerOffhandWeapon.AddMonsterToKillHistory(CreatureType.Value, kills + 1);
-
-                            return;
-                        }
-                        else
-                        {
-                            playerOffhandWeapon.AddMonsterToKillHistory(CreatureType.Value, 1);
-
-                            return;
-                        }
-                    }
-                }
-                if (playerCaster != null && playerCaster.ItemLevel != playerCaster.MaxLevel)
-                {
-                    var weaponHistory = playerCaster.GetMonsterKillHistory();
-
-                    if (weaponHistory != null)
-                    {
-                        if (weaponHistory.Count == 0)
-                        {
-                            playerCaster.AddMonsterToKillHistory(CreatureType.Value, 1);
-
-                            return;
-                        }
-
-                        if (weaponHistory.ContainsKey(CreatureType.Value))
-                        {
-                            var kills = weaponHistory[CreatureType.Value];
-
-                            playerCaster.RemoveMonsterFromKillHistory(CreatureType.Value);
-                            playerCaster.AddMonsterToKillHistory(CreatureType.Value, kills + 1);
-
-                            return;
-                        }
-                        else
-                        {
-                            playerCaster.AddMonsterToKillHistory(CreatureType.Value, 1);
-
-                            return;
-                        }
-                    }
-                }*/
+                return;
             }
         }
 

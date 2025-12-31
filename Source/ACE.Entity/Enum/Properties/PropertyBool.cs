@@ -197,7 +197,8 @@ namespace ACE.Entity.Enum.Properties
         IsInvited                        = 9012,
         IsInviting                       = 9013,
         IsGunblade                       = 9014,
-        RestedXpCalculated               = 9015, 
+        RestedXpCalculated               = 9015,
+        IsLootRolled                     = 9016,
 
         /// <summary>
         /// If set to true on a vendor, the vendor will be auto-populated with realm selections.

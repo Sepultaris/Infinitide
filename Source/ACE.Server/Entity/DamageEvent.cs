@@ -236,6 +236,11 @@ namespace ACE.Server.Entity
 
             DamageRatingMod = Creature.AdditiveCombine(DamageRatingBaseMod, RecklessnessMod, SneakAttackMod, HeritageMod);
 
+            float damageRatingModMultiplier = (float)PropertyManager.GetDouble("DamageRatingModMultiplier").Item;
+
+            if (playerAttacker != null)
+                DamageRatingMod = (float)(DamageRatingMod * damageRatingModMultiplier);
+
             if (pkBattle)
             {
                 PkDamageMod = Creature.GetPositiveRatingMod(attacker.GetPKDamageRating());
@@ -276,6 +281,9 @@ namespace ACE.Server.Entity
                     CriticalDamageMod = 1.0f + WorldObject.GetWeaponCritDamageMod(Weapon, attacker, attackSkill, defender);
 
                     CriticalDamageRatingMod = Creature.GetPositiveRatingMod(attacker.GetCritDamageRating());
+
+                    if (playerAttacker != null)
+                        CriticalDamageRatingMod = (float)(CriticalDamageRatingMod * PropertyManager.GetDouble("CriticalDamageRatingModMultiplier").Item);
 
                     // recklessness excluded from crits
                     RecklessnessMod = 1.0f;
@@ -344,9 +352,15 @@ namespace ACE.Server.Entity
             // damage resistance rating
             DamageResistanceRatingMod = DamageResistanceRatingBaseMod = defender.GetDamageResistRatingMod(CombatType);
 
+            if (Attacker is not Player)
+                DamageResistanceRatingMod = (float)(DamageResistanceRatingMod * PropertyManager.GetDouble("DamageResistenceModMultiplier").Item);
+
             if (IsCritical)
             {
                 CriticalDamageResistanceRatingMod = Creature.GetNegativeRatingMod(defender.GetCritDamageResistRating());
+
+                if (Attacker is not Player)
+                    CriticalDamageResistanceRatingMod = (float)(CriticalDamageResistanceRatingMod * PropertyManager.GetDouble("CriticalDamageResistenceModMultiplier").Item);
 
                 DamageResistanceRatingMod = Creature.AdditiveCombine(DamageResistanceRatingBaseMod, CriticalDamageResistanceRatingMod);
             }
