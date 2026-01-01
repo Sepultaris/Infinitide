@@ -131,25 +131,25 @@ namespace ACE.Server.WorldObjects
                     var baseMaxStamina = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxStamina).Value;
                     var baseMaxMana = weenie.GetPropertyAttribute2nd(PropertyAttribute2nd.MaxMana).Value;
 
-                    uint strength = (uint)((uint)((uint)Math.Max(instanceLevel - 275, 0) * 0.59f) * 0.92f);
-                    uint endurance = (uint)((uint)((uint)Math.Max(instanceLevel - 275, 0) * 8.8f) * 0.92f);
-                    uint coordination = (uint)((uint)((uint)Math.Max(instanceLevel - 275, 0) * 0.59f) * 0.92f);
-                    uint quickness = (uint)((uint)((uint)Math.Max(instanceLevel - 275, 0) * 0.59f) * 0.92f);
-                    uint self = (uint)((uint)((uint)Math.Max(instanceLevel - 275, 0) * 0.59f) * 0.92f);
-                    uint focus = (uint)((uint)((uint)Math.Max(instanceLevel - 275, 0) * 0.59f) * 0.92f);
+                    uint strength = (uint)((uint)Math.Max(instanceLevel - 275, 0) * mobStrengthScaleFactor);
+                    uint endurance = (uint)((uint)Math.Max(instanceLevel - 275, 0) * mobEnduranceScaleFactor);
+                    uint coordination = (uint)((uint)Math.Max(instanceLevel - 275, 0) * mobCoordinationScaleFactor);
+                    uint quickness = (uint)((uint)Math.Max(instanceLevel - 275, 0) * mobQuicknessScaleFactor);
+                    uint self = (uint)((uint)Math.Max(instanceLevel - 275, 0) * mobFocusScaleFactor);
+                    uint focus = (uint)((uint)Math.Max(instanceLevel - 275, 0) * mobSelfScaleFactor);
 
                     uint newHealthValue = baseMaxHealth + (uint)Math.Max(instanceLevel - 275, 0);
                     uint newStaminaValue = baseMaxStamina + (uint)Math.Max(instanceLevel - 275, 0);
                     uint newManaValue = baseMaxMana + (uint)Math.Max(instanceLevel - 275, 0);
 
                     if (Vitals.ContainsKey(PropertyAttribute2nd.MaxHealth))
-                        Vitals[PropertyAttribute2nd.MaxHealth].Current = newHealthValue;
+                        Vitals[PropertyAttribute2nd.MaxHealth].StartingValue = (uint)(newHealthValue * mobHealthScaleFactor);
 
                     if (Vitals.ContainsKey(PropertyAttribute2nd.MaxStamina))
-                        Vitals[PropertyAttribute2nd.MaxStamina].Current = newStaminaValue;
+                        Vitals[PropertyAttribute2nd.MaxStamina].StartingValue = (uint)(newStaminaValue * mobStaminaScaleFactor);
 
                     if (Vitals.ContainsKey(PropertyAttribute2nd.MaxMana))
-                        Vitals[PropertyAttribute2nd.MaxMana].Current = newManaValue;
+                        Vitals[PropertyAttribute2nd.MaxMana].StartingValue = (uint)(newManaValue * mobManaScaleFactor);
 
                     if (Attributes.ContainsKey(PropertyAttribute.Strength))
                         Attributes[PropertyAttribute.Strength].Ranks = strength;

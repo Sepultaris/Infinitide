@@ -65,6 +65,63 @@ namespace ACE.Server.Managers
                 return;
             }
 
+            if (source.WeenieClassId == 802596)
+            {
+                var session = player.Session;
+                var itemType = target.GetProperty(PropertyInt.ItemType);
+
+                if (target != null && itemType == 1)
+                {
+                    var newGBName = target.Name + $" (GB)";
+                    target.IsGunblade = true;
+                    target.SetProperty(PropertyBool.IsGunblade, true);
+                    target.Name = newGBName;
+                    target.SetProperty(PropertyString.Name, newGBName);
+                    target.AmmoType = AmmoType.GunBladeAmmo;
+
+                    player.Session.Network.EnqueueSend(new GameMessageSystemChat($"You've converted the {target.Name} into a gunblade.", ChatMessageType.Craft));
+
+                    ActionChain craftChain = new ActionChain();
+
+                    var animTime = 0.0f;
+
+                    player.IsBusy = true;
+
+                    if (player.CombatMode != CombatMode.NonCombat)
+                    {
+                        var stanceTime = player.SetCombatMode(CombatMode.NonCombat);
+                        craftChain.AddDelaySeconds(stanceTime);
+
+                        animTime += stanceTime;
+                    }
+
+                    animTime += player.EnqueueMotion(craftChain, MotionCommand.ClapHands);
+
+                    player.EnqueueMotion(craftChain, MotionCommand.Ready);
+
+                    craftChain.AddAction(player, () =>
+                    {
+                        player.SendUseDoneEvent();
+
+                        player.IsBusy = false;
+                    });
+
+                    craftChain.EnqueueChain();
+
+                    player.NextUseTime = DateTime.UtcNow.AddSeconds(animTime);
+
+                    player.TryConsumeFromInventoryWithNetworking(source);
+
+                    return;
+                }
+                if (itemType != 1)
+                {
+                    player.Session.Network.EnqueueSend(new GameMessageSystemChat($"This can only be applied to melee weapons.", ChatMessageType.Craft));
+                    player.SendUseDoneEvent();
+                    return;
+                }
+            }
+
             var recipe = GetRecipe(player, source, target);
 
             if (recipe == null)

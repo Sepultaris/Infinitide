@@ -170,6 +170,9 @@ namespace ACE.Server.Factories
                     {
                         //Weapons
 
+                        obj.WieldRequirements = WieldRequirement.Level;
+                        obj.WieldDifficulty = instanceLevel;
+
                         if (obj.W_WeaponType == WeaponType.Unarmed)
                         {
                             var newDamage = obj.Damage + ((instanceLevel / 100) * (int)PropertyManager.GetLong("MeleeWeaponDamageMultiplier").Item);
@@ -264,12 +267,6 @@ namespace ACE.Server.Factories
                                 obj.Name = newGBName;
                                 obj.SetProperty(PropertyString.Name, newGBName);
                             }
-                            
-                            obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
-                            obj.WieldRequirements2 = WieldRequirement.Level;
-                            obj.SetProperty(PropertyInt.WieldRequirements2, 7);
-                            obj.WieldDifficulty2 = instanceLevel;
-                            obj.SetProperty(PropertyInt.WieldDifficulty2, instanceLevel);
                         }
 
                         if (obj.ItemType == ItemType.MissileWeapon || obj.WeaponSkill == Skill.MissileWeapons)
@@ -279,11 +276,6 @@ namespace ACE.Server.Factories
 
                             obj.Name = newName;
                             obj.SetProperty(PropertyString.Name, newName);
-                            obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
-                            obj.WieldRequirements2 = WieldRequirement.Level;
-                            obj.SetProperty(PropertyInt.WieldRequirements2, 7);
-                            obj.WieldDifficulty2 = instanceLevel;
-                            obj.SetProperty(PropertyInt.WieldDifficulty2, instanceLevel);
                         }
 
                         if (obj.ItemType == ItemType.Caster || obj.WeaponSkill == Skill.WarMagic || obj.WeaponSkill == Skill.VoidMagic)
@@ -293,11 +285,6 @@ namespace ACE.Server.Factories
 
                             obj.Name = newName;
                             obj.SetProperty(PropertyString.Name, newName);
-                            obj.SetProperty(PropertyInt64.ItemTotalXp, 0);
-                            obj.WieldRequirements2 = WieldRequirement.Level;
-                            obj.SetProperty(PropertyInt.WieldRequirements2, 7);
-                            obj.WieldDifficulty2 = instanceLevel;
-                            obj.SetProperty(PropertyInt.WieldDifficulty2, instanceLevel);
                         }
 
                         // Wearables
@@ -353,7 +340,6 @@ namespace ACE.Server.Factories
                                     obj.GearDamageResist = gearRating2;
                                 }
 
-                                obj.WieldDifficulty = 7;
                                 obj.WieldDifficulty = instanceLevel;
                             }
                         }

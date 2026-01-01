@@ -119,7 +119,7 @@ namespace ACE.Server.Realms
 
             foreach (Entity.Landblock landblock in landblockGroup)
             {
-                var players = landblock.GetAllCreatures().Where(x => x is Player);
+                var players = landblock.GetAllCreatures().Where(x => x is Player && x.Location.Instance == Instance);
 
                 foreach (var p in players)
                 {
