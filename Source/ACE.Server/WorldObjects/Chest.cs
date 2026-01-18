@@ -95,6 +95,8 @@ namespace ACE.Server.WorldObjects
 
         public override ActivationResult CheckUseRequirements(WorldObject activator)
         {
+            var position = Location.AsLocalPosition();
+            bool inSetLandblock = RealmManager.Peripherals.DungeonSets.IncludedInSet(position, "ShatteredDawn");
             var baseRequirements = base.CheckUseRequirements(activator);
             if (!baseRequirements.Success)
                 return baseRequirements;
@@ -160,6 +162,25 @@ namespace ACE.Server.WorldObjects
                         player.QuestManager.HandleSolveError(Quest);
                         return new ActivationResult(false);
                     }
+                }
+            }
+
+            if (inSetLandblock)
+            {
+                if (Inventory.Count > 0)
+                {
+                    var woList = new List<WorldObject>(Inventory.Values);
+
+                    foreach (var item in woList)
+                    {
+                        if (item == null)
+                            continue;
+
+                        if (!woList.Contains(item))
+                            woList.Add(item);
+                    }
+
+                    Factories.LootGenerationFactory.ScaleInstanceLoot(CurrentLandblock, Location, woList);
                 }
             }
 

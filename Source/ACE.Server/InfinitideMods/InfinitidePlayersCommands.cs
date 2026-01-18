@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using ACE.Common;
 using ACE.Entity.Enum;
 using ACE.Entity.Enum.Properties;
 using ACE.Server.Managers;
@@ -417,64 +416,57 @@ namespace ACE.Server.Command.Handlers
             else if (parameters[0].Equals("destruction"))
                 parameters[0] = "Destruction";
 
-            /*PropertyAttribute result2;
-            if (!System.Enum.TryParse<PropertyAttribute>(parameters[0], out result2))
-            {
-                ChatPacket.SendServerMessage(session, "Invalid Attribute, valid values are: Strength,Endurance,Coordination,Quickness,Focus,Self,Health,Stamina,Mana", ChatMessageType.Broadcast);
-                return;
-            }*/
-
             if (parameters[0] == "Strength")
             {
-                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedStr);
+                var costToRaise = GetXPForAttributeRaise((int)session.Player.Strength.StartingValue);
                 ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Strength", ChatMessageType.Broadcast);
                 return;
             }
             else if (parameters[0] == "Endurance")
             {
-                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedEnd);
+                var costToRaise = GetXPForAttributeRaise((int)session.Player.Endurance.StartingValue);
                 ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Endurance", ChatMessageType.Broadcast);
                 return;
             }
             else if (parameters[0] == "Coordination")
             {
-                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedCoord);
+                var costToRaise = GetXPForAttributeRaise((int)session.Player.Coordination.StartingValue);
                 ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Coordination", ChatMessageType.Broadcast);
                 return;
             }
             else if (parameters[0] == "Quickness")
             {
-                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedQuick);
+                var costToRaise = GetXPForAttributeRaise((int)session.Player.Quickness.StartingValue);
                 ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Quickness", ChatMessageType.Broadcast);
                 return;
             }
             else if (parameters[0] == "Focus")
             {
-                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedFocus);
+                var costToRaise = GetXPForAttributeRaise((int)session.Player.Focus.StartingValue);
                 ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Focus", ChatMessageType.Broadcast);
                 return;
             }
             else if (parameters[0] == "Self")
             {
-                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedSelf);
+                var costToRaise = GetXPForAttributeRaise((int)session.Player.Self.StartingValue);
                 ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Self", ChatMessageType.Broadcast);
                 return;
             }
             else if (parameters[0] == "Health")
             {
-                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedHealth);
+                var costToRaise = GetXPForAttributeRaise((int)session.Player.Health.StartingValue);
                 ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Health", ChatMessageType.Broadcast);
                 return;
             }
             else if (parameters[0] == "Stamina")
             {
-                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedStamina);
+                var costToRaise = GetXPForAttributeRaise((int)session.Player.Stamina.StartingValue);
                 ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Stamina", ChatMessageType.Broadcast);
                 return;
             }
             else if (parameters[0] == "Mana")
             {
-                var costToRaise = GetXPForAttributeRaise(session.Player.RaisedMana);
+                var costToRaise = GetXPForAttributeRaise((int)session.Player.Mana.StartingValue);
                 ChatPacket.SendServerMessage(session, $"You require {costToRaise:N0} XP to raise Mana", ChatMessageType.Broadcast);
                 return;
             }
@@ -507,7 +499,7 @@ namespace ACE.Server.Command.Handlers
         public static long GetXPForAttributeRaise(int level)
         {
             long baseCost = 10000000000;
-            double growthRate = 1.00110; //1.00035
+            double growthRate = PropertyManager.GetDouble("XpForLevelCurve").Item; //1.00035
 
             long xpCost = (long)(baseCost * Math.Pow(growthRate, level - 1) * PropertyManager.GetDouble("AttributeRaiseCostMultiplier").Item);
             return xpCost;

@@ -693,6 +693,7 @@ namespace ACE.Server.Managers
                 ("AttributeRaiseCostMultiplier", new Property<double>(1.0, "scales strength of monsters in instances")),
                 ("LumRaiseCostMultiplier", new Property<double>(1.0, "scales strength of monsters in instances")),
                 ("XpForLevelMultiplier", new Property<double>(1.0, "scales strength of monsters in instances")),
+                ("XpForLevelCurve", new Property<double>(1.0, "scales strength of monsters in instances")),
                 ("DamageRatingModMultiplier", new Property<double>(1.0, "scales strength of monsters in instances")),
                 ("CriticalDamageRatingModMultiplier", new Property<double>(1.0, "scales strength of monsters in instances")),
                 ("DamageResistenceModMultiplier", new Property<double>(1.0, "scales strength of monsters in instances")),
