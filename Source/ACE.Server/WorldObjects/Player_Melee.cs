@@ -586,7 +586,7 @@ namespace ACE.Server.WorldObjects
                     nextAttack.AddAction(this, () => Attack(target, attackSequence, true));
                     nextAttack.EnqueueChain();
 
-                    
+
                 }
                 else
                 {

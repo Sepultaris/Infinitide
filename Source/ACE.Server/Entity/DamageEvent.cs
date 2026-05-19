@@ -283,7 +283,7 @@ namespace ACE.Server.Entity
                     CriticalDamageRatingMod = Creature.GetPositiveRatingMod(attacker.GetCritDamageRating());
 
                     if (playerAttacker != null)
-                        CriticalDamageRatingMod = (float)(CriticalDamageRatingMod * PropertyManager.GetDouble("CriticalDamageRatingModMultiplier").Item);
+                        CriticalDamageRatingMod = (float)(Creature.GetPositiveRatingMod(attacker.GetCritDamageRating()) * PropertyManager.GetDouble("CriticalDamageRatingModMultiplier").Item);
 
                     // recklessness excluded from crits
                     RecklessnessMod = 1.0f;

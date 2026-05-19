@@ -604,6 +604,9 @@ namespace ACE.Server.WorldObjects
         /// </summary>
         protected void CreateCorpse(DamageHistoryInfo killer, bool hadVitae = false)
         {
+            var position = Location.AsLocalPosition();
+            bool inSetLandblock = RealmManager.Peripherals.DungeonSets.IncludedInSet(position, "ShatteredDawn");
+
             if (NoCorpse)
             {
                 if (killer != null && killer.IsOlthoiPlayer) return;
@@ -618,7 +621,7 @@ namespace ACE.Server.WorldObjects
                     LandblockManager.AddObject(item);
                 }
 
-                if (loot.Count > 0)
+                if (loot.Count > 0 && inSetLandblock)
                 {
                     LootGenerationFactory.ScaleInstanceLoot(CurrentLandblock, Location, loot);
                 }
@@ -860,11 +863,13 @@ namespace ACE.Server.WorldObjects
             var droppedItems = new List<WorldObject>();
             var currentLandblock = CurrentLandblock;
             var highestPlayerLevel = Location.GetHighestPlayerLevelInInstance(currentLandblock.Id);
+            var position = Location.AsLocalPosition();
+            bool inSetLandblock = RealmManager.Peripherals.DungeonSets.IncludedInSet(position, "ShatteredDawn");
 
             // create death treasure from loot generation factory
             if (DeathTreasure != null)
             {
-                if (highestPlayerLevel >= 275)
+                if (highestPlayerLevel >= 275 && inSetLandblock)
                 {
                     DeathTreasure.Id = 300391;
                     DeathTreasure.TreasureType = 3111;

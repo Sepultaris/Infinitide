@@ -1244,7 +1244,7 @@ namespace ACE.Server.WorldObjects
                     if (caster.WeaponBaseDamageMod == null)
                         caster.WeaponBaseDamageMod = caster.ElementalDamageMod;
 
-                    float baseWeaponDamage = (float)caster.WeaponBaseDamageMod.Value;
+                    float baseWeaponDamage = (float)caster.WeaponBaseDamageMod;
 
                     float maxBonus = (float)(baseWeaponDamage * 0.015);
 
@@ -1317,7 +1317,7 @@ namespace ACE.Server.WorldObjects
         {
             var damageType = item.GetProperty(PropertyInt.DamageType);
 
-            if (item.ImbuedEffect == 0)
+            if (item.ImbuedEffect == 0 && item.ItemType == ItemType.Weapon)
             {
                 if (damageType == 1)
                 {

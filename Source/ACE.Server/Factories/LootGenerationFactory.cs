@@ -325,8 +325,8 @@ namespace ACE.Server.Factories
                                     obj.ArmorLevel = newArmorLevel;
                                     obj.BaseArmorLevel = obj.ArmorLevel;
 
-                                    obj.GearCritDamage = gearRating1;
-                                    obj.GearCritDamageResist = gearRating2;
+                                    obj.GearDamage = gearRating1;
+                                    obj.GearDamageResist = gearRating2;
 
                                     obj.MonsterKillLevel = 0;
 
@@ -334,10 +334,8 @@ namespace ACE.Server.Factories
                                 }
                                 else
                                 {
-                                    var rng = ThreadSafeRandom.Next(0, 1);
-
-                                    obj.GearDamage = gearRating1;
-                                    obj.GearDamageResist = gearRating2;
+                                    obj.GearCritDamage = gearRating1;
+                                    obj.GearCritDamageResist = gearRating2;
                                 }
 
                                 obj.WieldDifficulty = instanceLevel;

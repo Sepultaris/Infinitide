@@ -70,7 +70,7 @@ namespace ACE.Server.Managers
                 var session = player.Session;
                 var itemType = target.GetProperty(PropertyInt.ItemType);
 
-                if (target != null && itemType == 1)
+                if (target != null && itemType == 1 && !target.IsGunblade)
                 {
                     var newGBName = target.Name + $" (GB)";
                     target.IsGunblade = true;
